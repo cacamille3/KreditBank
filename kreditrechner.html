@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kreditrechner — Bankkredit + Zinsfreie Rate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=JetBrains+Mono:wght@300..700&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F5F1E8;
+  --bg-card: #FFFFFF;
+  --bg-accent: #1A1A1A;
+  --ink: #1A1A1A;
+  --ink-soft: #5C564A;
+  --ink-faint: #8A8478;
+  --line: #D8D2C4;
+  --line-soft: #E8E3D5;
+  --accent: #C84B1E;
+  --accent-soft: #F4DCD0;
+  --green: #3B6D11;
+  --green-soft: #E3EED3;
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'Instrument Sans', -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', 'SF Mono', monospace;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+body {
+  background-image:
+    radial-gradient(circle at 15% 10%, rgba(200, 75, 30, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(59, 109, 17, 0.04) 0%, transparent 40%);
+}
+
+.container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 48px 32px 80px;
+}
+
+/* HEADER */
+header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 40px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  background: var(--ink);
+  color: var(--bg);
+  display: grid;
+  place-items: center;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-style: italic;
+  font-size: 20px;
+  border-radius: 50%;
+}
+
+.brand-name {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+h1 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(42px, 5vw, 64px);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  font-variation-settings: "opsz" 144;
+}
+
+h1 em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent);
+}
+
+.tagline {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  text-align: right;
+  line-height: 1.6;
+}
+
+.tagline .dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* LAYOUT */
+.layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  header { grid-template-columns: 1fr; }
+  .tagline { text-align: left; margin-top: 8px; }
+}
+
+/* PANELS */
+.panel {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.panel + .panel { margin-top: 16px; }
+
+.panel-header {
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--line-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.panel-title {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.01em;
+}
+
+.panel-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+}
+
+.panel-body {
+  padding: 20px;
+}
+
+.panel-note {
+  font-size: 12px;
+  color: var(--ink-faint);
+  font-style: italic;
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+
+/* SLIDERS */
+.slider-group {
+  margin-bottom: 14px;
+}
+
+.slider-group:last-child { margin-bottom: 0; }
+
+.slider-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.slider-label {
+  font-size: 12px;
+  color: var(--ink-soft);
+  letter-spacing: 0.02em;
+}
+
+.slider-value {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  font-feature-settings: "tnum";
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2px;
+  background: var(--line);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--ink);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  border: 2px solid var(--bg-card);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  background: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--ink);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid var(--bg-card);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+/* RESULTS */
+.results-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 32px;
+}
+
+.hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 28px;
+}
+
+@media (max-width: 700px) {
+  .hero-metrics { grid-template-columns: repeat(2, 1fr); }
+}
+
+.hero-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hero-metric-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.hero-metric-value {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-feature-settings: "tnum";
+  font-variation-settings: "opsz" 48;
+}
+
+.hero-metric-value.accent { color: var(--accent); }
+.hero-metric-value.muted { color: var(--ink-soft); }
+
+.hero-metric-sub {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-faint);
+  margin-top: 2px;
+}
+
+/* SECTION BLOCKS */
+.result-section {
+  margin-bottom: 28px;
+}
+
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.section-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.section-title em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.section-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding: 3px 8px;
+  background: var(--bg);
+  border-radius: 3px;
+}
+
+.breakdown {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 32px;
+}
+
+@media (max-width: 600px) {
+  .breakdown { grid-template-columns: 1fr; }
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px dotted var(--line-soft);
+  font-size: 13px;
+}
+
+.breakdown-row:last-child { border-bottom: none; }
+
+.breakdown-label {
+  color: var(--ink-soft);
+}
+
+.breakdown-value {
+  font-family: var(--mono);
+  font-weight: 500;
+  color: var(--ink);
+  font-feature-settings: "tnum";
+}
+
+.breakdown-value.highlight { color: var(--accent); }
+
+/* CHART */
+.chart-wrap {
+  position: relative;
+  padding: 16px 0 8px;
+}
+
+.chart-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 16px;
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--ink-soft);
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.legend-dot.a { background: var(--accent); }
+.legend-dot.b { background: var(--green); }
+
+canvas {
+  width: 100%;
+  height: 220px;
+  display: block;
+}
+
+/* SUMMARY */
+.total-summary {
+  background: var(--ink);
+  color: var(--bg);
+  padding: 24px 28px;
+  border-radius: 4px;
+  margin-top: 24px;
+}
+
+.total-summary .breakdown-row {
+  border-bottom-color: rgba(255,255,255,0.1);
+  padding: 10px 0;
+  font-size: 14px;
+}
+
+.total-summary .breakdown-label { color: rgba(245,241,232,0.7); }
+.total-summary .breakdown-value { color: var(--bg); }
+.total-summary .breakdown-value.highlight { color: #F4DCD0; }
+
+.total-summary-title {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 18px;
+  margin-bottom: 14px;
+  color: var(--bg);
+}
+
+/* PRESETS */
+.presets {
+  margin-top: 20px;
+}
+
+.presets-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 10px;
+}
+
+.preset-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.preset-btn {
+  font-family: var(--sans);
+  font-size: 12px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  cursor: pointer;
+  color: var(--ink-soft);
+  transition: all 0.15s ease;
+}
+
+.preset-btn:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+  background: var(--bg);
+}
+
+.preset-btn.active {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+/* INSIGHTS */
+.insights {
+  margin-top: 24px;
+  padding: 20px 24px;
+  background: var(--accent-soft);
+  border-radius: 4px;
+  border-left: 3px solid var(--accent);
+}
+
+.insights-title {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: var(--ink);
+}
+
+.insight-item {
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.55;
+  padding: 4px 0;
+}
+
+.insight-item strong {
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--accent);
+}
+
+/* FOOTER */
+footer {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+}
+
+@media (max-width: 600px) {
+  footer { flex-direction: column; gap: 8px; }
+}
+
+/* ANIMATIONS */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-metric, .result-section, .total-summary, .insights {
+  animation: fadeInUp 0.5s ease-out backwards;
+}
+
+.hero-metric:nth-child(1) { animation-delay: 0.05s; }
+.hero-metric:nth-child(2) { animation-delay: 0.1s; }
+.hero-metric:nth-child(3) { animation-delay: 0.15s; }
+.hero-metric:nth-child(4) { animation-delay: 0.2s; }
+
+.panel {
+  animation: fadeInUp 0.4s ease-out backwards;
+}
+.panel:nth-child(1) { animation-delay: 0.1s; }
+.panel:nth-child(2) { animation-delay: 0.15s; }
+.panel:nth-child(3) { animation-delay: 0.2s; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+  <div>
+    <div class="brand">
+      <div class="brand-mark">k</div>
+      <div class="brand-name">Kreditrechner · AT</div>
+    </div>
+    <h1>Finanzierung, <em>durchdacht.</em></h1>
+  </div>
+  <div class="tagline">
+    <span class="dot"></span>Bankkredit + zinsfreie Rate<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;mit VPI-Indexierung
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT: CONTROLS -->
+  <aside>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Bankkredit</span>
+        <span class="panel-num">01 — Teil A</span>
+      </div>
+      <div class="panel-body">
+        <div class="slider-group">
+          <div class="slider-head">
+            <span class="slider-label">Kreditsumme</span>
+            <span class="slider-value" id="loanA-out">200.000 €</span>
+          </div>
+          <input type="range" min="50000" max="350000" step="10000" value="200000" id="loanA">
+        </div>
+        <div class="slider-group">
+          <div class="slider-head">
+            <span class="slider-label">Fixzinsbindung</span>
+            <span class="slider-value" id="fixYears-out">10 J</span>
+          </div>
+          <input type="range" min="5" max="20" step="1" value="10" id="fixYears">
+        </div>
+        <div class="slider-group">
+          <div class="slider-head">
+            <span class="slider-label">Gesamtlaufzeit</span>
+            <span class="slider-value" id="totalYearsA-out">20 J</span>
+          </div>
+          <input type="range" min="10" max="30" step="1" value="20" id="totalYearsA">
+        </div>
+        <div class="slider-group">
+          <div class="slider-head">
+            <span class="slider-label">Fixzinssatz</span>
+            <span class="slider-value" id="fixRate-out">3,15 %</span>
+          </div>
+          <input type="range" min="2" max="5" step="0.05" value="3.15" id="fixRate">
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Zinsfreie Rate</span>
+        <span class="panel-num">02 — Teil B</span>
+      </div>
+      <div class="panel-body">
+        <div class="panel-note">Fälligkeit später, keine Zinsen — aber VPI-indexiert</div>
+        <div class="slider-group">
+          <div class="slider-head">
+            <span class="slider-label">Betrag (heutiger Wert)</span>
+            <span class="slider-value" id="loanB-out">100.000 €</span>
+          </div>
+          <input type="range" min="0" max="200000" step="10000" value="100000" id="loanB">
+        </div>
+        <div class="slider-group">
+          <div class="slider-head">
+            <span class="slider-label">Fällig nach</span>
+            <span class="slider-value" id="payoutYear-out">10 J</span>
+          </div>
+          <input type="range" min="3" max="15" step="1" value="10" id="payoutYear">
+        </div>
+        <div class="slider-group">
+          <div class="slider-head">
+            <span class="slider-label">Ratenzahlung über</span>
+            <span class="slider-value" id="loanBYears-out">10 J</span>
+          </div>
+          <input type="range" min="1" max="20" step="1" value="10" id="loanBYears">
+        </div>
+        <div class="slider-group">
+          <div class="slider-head">
+            <span class="slider-label">VPI jährlich</span>
+            <span class="slider-value" id="vpi-out">2,50 %</span>
+          </div>
+          <input type="range" min="0" max="6" step="0.1" value="2.5" id="vpi">
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Variabler Zins</span>
+        <span class="panel-num">03 — Markt</span>
+      </div>
+      <div class="panel-body">
+        <div class="slider-group">
+          <div class="slider-head">
+            <span class="slider-label">3M Euribor</span>
+            <span class="slider-value" id="euribor-out">2,17 %</span>
+          </div>
+          <input type="range" min="0.5" max="6" step="0.1" value="2.17" id="euribor">
+        </div>
+        <div class="slider-group">
+          <div class="slider-head">
+            <span class="slider-label">Aufschlag Bank</span>
+            <span class="slider-value" id="margin-out">0,965 %</span>
+          </div>
+          <input type="range" min="0.5" max="2" step="0.005" value="0.965" id="margin">
+        </div>
+      </div>
+    </div>
+
+    <div class="presets">
+      <div class="presets-title">Szenarien</div>
+      <div class="preset-list" id="preset-list">
+        <button class="preset-btn active" data-p="200000,10,20,100000,10,10">Original</button>
+        <button class="preset-btn" data-p="200000,10,20,100000,10,5">Teil B schnell (5 J)</button>
+        <button class="preset-btn" data-p="200000,15,25,100000,10,15">Lange Sicherheit</button>
+        <button class="preset-btn" data-p="200000,10,15,100000,5,10">B früh (nach 5 J)</button>
+        <button class="preset-btn" data-p="150000,10,15,150000,10,15">Weniger Bankkredit</button>
+        <button class="preset-btn" data-p="250000,15,25,50000,10,10">Max Bank, min B</button>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- RIGHT: RESULTS -->
+  <main>
+    <div class="results-panel">
+
+      <div class="hero-metrics">
+        <div class="hero-metric">
+          <span class="hero-metric-label">Gesamtbetrag</span>
+          <span class="hero-metric-value" id="m-total">0 €</span>
+          <span class="hero-metric-sub">nominal</span>
+        </div>
+        <div class="hero-metric">
+          <span class="hero-metric-label">Höchste Rate</span>
+          <span class="hero-metric-value" id="m-max">0 €</span>
+          <span class="hero-metric-sub">pro Monat</span>
+        </div>
+        <div class="hero-metric">
+          <span class="hero-metric-label">Bankzinsen</span>
+          <span class="hero-metric-value accent" id="m-zins">0 €</span>
+          <span class="hero-metric-sub">über Laufzeit</span>
+        </div>
+        <div class="hero-metric">
+          <span class="hero-metric-label">VPI-Zuschlag</span>
+          <span class="hero-metric-value muted" id="m-vpi">0 €</span>
+          <span class="hero-metric-sub">auf Teil B</span>
+        </div>
+      </div>
+
+      <div class="result-section">
+        <div class="section-title-row">
+          <h2 class="section-title">Bankkredit — <em>Teil A</em></h2>
+          <span class="section-tag" id="tag-a">200.000 € · 20 J</span>
+        </div>
+        <div class="breakdown" id="breakdown-a"></div>
+      </div>
+
+      <div class="result-section">
+        <div class="section-title-row">
+          <h2 class="section-title">Zinsfreie Rate — <em>Teil B</em></h2>
+          <span class="section-tag" id="tag-b">100.000 € · fällig 10 J</span>
+        </div>
+        <div class="breakdown" id="breakdown-b"></div>
+      </div>
+
+      <div class="result-section">
+        <div class="chart-title">
+          <h2 class="section-title">Raten über die <em>Laufzeit</em></h2>
+          <div class="chart-legend">
+            <span><span class="legend-dot a"></span>Teil A</span>
+            <span><span class="legend-dot b"></span>Teil B</span>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="rateChart"></canvas>
+        </div>
+      </div>
+
+      <div class="total-summary">
+        <div class="total-summary-title">Gesamtübersicht</div>
+        <div class="breakdown-row">
+          <span class="breakdown-label">Alle Zahlungen zusammen</span>
+          <span class="breakdown-value" id="s-paid">0 €</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-label">Davon Bankzinsen</span>
+          <span class="breakdown-value highlight" id="s-zins">0 €</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-label">Davon VPI-Aufschlag</span>
+          <span class="breakdown-value" id="s-vpi">0 €</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-label">Mehrkosten gegenüber Nominal</span>
+          <span class="breakdown-value highlight" id="s-extra">0 €</span>
+        </div>
+      </div>
+
+      <div class="insights">
+        <div class="insights-title">Was diese Kombination bedeutet</div>
+        <div id="insights-body"></div>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+<footer>
+  <div>Keine Finanzberatung · nur rechnerische Darstellung</div>
+  <div>Stand: April 2026</div>
+</footer>
+
+</div>
+
+<script>
+const els = {};
+['loanA','fixYears','totalYearsA','fixRate','loanB','payoutYear','loanBYears','vpi','euribor','margin'].forEach(k => {
+  els[k] = document.getElementById(k);
+});
+const outs = {};
+Object.keys(els).forEach(k => { outs[k] = document.getElementById(k + '-out'); });
+
+const fmt = n => n.toLocaleString('de-AT', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const fmtInt = n => Math.round(n).toLocaleString('de-AT');
+const fmtCur = n => fmtInt(n) + ' €';
+const fmtPct = n => n.toFixed(2).replace('.', ',') + ' %';
+
+function calc() {
+  const loanA = +els.loanA.value;
+  const fixYears = +els.fixYears.value;
+  const totalYearsA = +els.totalYearsA.value;
+  const fixRateAnnual = +els.fixRate.value;
+  const fixRate = fixRateAnnual / 100 / 12;
+  const loanB = +els.loanB.value;
+  const payoutYear = +els.payoutYear.value;
+  const loanBYears = +els.loanBYears.value;
+  const vpi = +els.vpi.value / 100;
+  const euribor = +els.euribor.value;
+  const margin = +els.margin.value;
+  const varRateAnnual = euribor + margin;
+  const varRate = varRateAnnual / 100 / 12;
+
+  const varYearsA = Math.max(0, totalYearsA - fixYears);
+  const fixMonths = fixYears * 12;
+  const totalMonthsA = totalYearsA * 12;
+  const varMonthsA = varYearsA * 12;
+
+  // Bankkredit Phase 1 (Fix, Annuität auf Gesamtlaufzeit)
+  const annuityA1 = totalMonthsA > 0 ? loanA * fixRate / (1 - Math.pow(1 + fixRate, -totalMonthsA)) : 0;
+  let balA = loanA, interestA1 = 0;
+  for (let i = 0; i < fixMonths; i++) {
+    const interest = balA * fixRate;
+    balA -= (annuityA1 - interest);
+    interestA1 += interest;
+  }
+  const remainingA = Math.max(0, balA);
+
+  // Bankkredit Phase 2 (Variabel)
+  let annuityA2 = 0, interestA2 = 0;
+  if (varMonthsA > 0 && remainingA > 0) {
+    annuityA2 = remainingA * varRate / (1 - Math.pow(1 + varRate, -varMonthsA));
+    let bal = remainingA;
+    for (let i = 0; i < varMonthsA; i++) {
+      const interest = bal * varRate;
+      bal -= (annuityA2 - interest);
+      interestA2 += interest;
+    }
+  }
+
+  // Teil B: VPI-angepasst, zinsfrei
+  const loanBAdjusted = loanB * Math.pow(1 + vpi, payoutYear);
+  const loanBMonths = loanBYears * 12;
+  const rateB = loanBMonths > 0 ? loanBAdjusted / loanBMonths : 0;
+
+  // Timeline
+  const maxMonths = Math.max(totalMonthsA, payoutYear * 12 + loanBMonths);
+  const timeline = [];
+  for (let m = 0; m < maxMonths; m++) {
+    let rA = 0, rB = 0;
+    if (m < fixMonths && m < totalMonthsA) rA = annuityA1;
+    else if (m < totalMonthsA) rA = annuityA2;
+    if (m >= payoutYear * 12 && m < payoutYear * 12 + loanBMonths) rB = rateB;
+    timeline.push({ month: m, rateA: rA, rateB: rB, total: rA + rB });
+  }
+
+  const maxRate = Math.max(...timeline.map(t => t.total), 1);
+  const totalInterest = interestA1 + interestA2;
+  const totalPaidA = (annuityA1 * fixMonths) + (annuityA2 * varMonthsA);
+  const totalPaidB = rateB * loanBMonths;
+  const totalPaid = totalPaidA + totalPaidB;
+  const totalNominal = loanA + loanBAdjusted;
+  const vpiSurcharge = loanBAdjusted - loanB;
+
+  // HERO metrics
+  document.getElementById('m-total').textContent = fmtCur(totalNominal);
+  document.getElementById('m-max').textContent = fmtCur(maxRate);
+  document.getElementById('m-zins').textContent = fmtCur(totalInterest);
+  document.getElementById('m-vpi').textContent = fmtCur(vpiSurcharge);
+
+  // Section tags
+  document.getElementById('tag-a').textContent = `${fmtCur(loanA)} · ${totalYearsA} J`;
+  document.getElementById('tag-b').textContent = `${fmtCur(loanB)} · fällig ${payoutYear} J`;
+
+  // Breakdown A
+  document.getElementById('breakdown-a').innerHTML = `
+    <div class="breakdown-row"><span class="breakdown-label">Rate Fixphase</span><span class="breakdown-value">${fmtCur(annuityA1)}</span></div>
+    <div class="breakdown-row"><span class="breakdown-label">Zinsen Phase 1</span><span class="breakdown-value">${fmtCur(interestA1)}</span></div>
+    <div class="breakdown-row"><span class="breakdown-label">Fixdauer</span><span class="breakdown-value">${fixYears} J · ${fmtPct(fixRateAnnual)}</span></div>
+    <div class="breakdown-row"><span class="breakdown-label">Restschuld nach Fix</span><span class="breakdown-value">${fmtCur(remainingA)}</span></div>
+    <div class="breakdown-row"><span class="breakdown-label">Rate Variabelphase</span><span class="breakdown-value">${fmtCur(annuityA2)}</span></div>
+    <div class="breakdown-row"><span class="breakdown-label">Zinsen Phase 2</span><span class="breakdown-value">${fmtCur(interestA2)}</span></div>
+    <div class="breakdown-row"><span class="breakdown-label">Variabel</span><span class="breakdown-value">${varYearsA} J · ${fmtPct(varRateAnnual)}</span></div>
+    <div class="breakdown-row"><span class="breakdown-label">Gesamt Zinsen A</span><span class="breakdown-value highlight">${fmtCur(totalInterest)}</span></div>
+  `;
+
+  // Breakdown B
+  const vpiPct = (Math.pow(1+vpi, payoutYear)-1)*100;
+  document.getElementById('breakdown-b').innerHTML = `
+    <div class="breakdown-row"><span class="breakdown-label">Heutiger Wert</span><span class="breakdown-value">${fmtCur(loanB)}</span></div>
+    <div class="breakdown-row"><span class="breakdown-label">Nach VPI-Anpassung</span><span class="breakdown-value">${fmtCur(loanBAdjusted)}</span></div>
+    <div class="breakdown-row"><span class="breakdown-label">VPI-Steigerung</span><span class="breakdown-value">+${vpiPct.toFixed(1).replace('.',',')} %</span></div>
+    <div class="breakdown-row"><span class="breakdown-label">Monatsrate (zinsfrei)</span><span class="breakdown-value">${fmtCur(rateB)}</span></div>
+    <div class="breakdown-row"><span class="breakdown-label">Zahlungsdauer</span><span class="breakdown-value">${loanBYears} J (${loanBMonths} M)</span></div>
+    <div class="breakdown-row"><span class="breakdown-label">Zeitraum</span><span class="breakdown-value">J ${payoutYear+1}–${payoutYear+loanBYears}</span></div>
+    <div class="breakdown-row"><span class="breakdown-label">Zahlung gesamt</span><span class="breakdown-value">${fmtCur(totalPaidB)}</span></div>
+    <div class="breakdown-row"><span class="breakdown-label">VPI-Zuschlag</span><span class="breakdown-value highlight">${fmtCur(vpiSurcharge)}</span></div>
+  `;
+
+  // Summary
+  document.getElementById('s-paid').textContent = fmtCur(totalPaid);
+  document.getElementById('s-zins').textContent = fmtCur(totalInterest);
+  document.getElementById('s-vpi').textContent = fmtCur(vpiSurcharge);
+  document.getElementById('s-extra').textContent = fmtCur(totalInterest + vpiSurcharge);
+
+  // Insights
+  const zinsQuote = totalInterest / loanA * 100;
+  const vpiQuote = vpiSurcharge / loanB * 100;
+  const phase2Rate = annuityA2 + rateB;
+  const overlap = payoutYear < totalYearsA;
+  const insights = [];
+  insights.push(`<div class="insight-item"><strong>MONATSLAST</strong> &nbsp; Phase 1 (J 1–${payoutYear}): <b>${fmtCur(annuityA1)}</b>. Höchste Belastung: <b>${fmtCur(maxRate)}</b> ab Jahr ${payoutYear+1}.</div>`);
+  insights.push(`<div class="insight-item"><strong>ZINSLAST</strong> &nbsp; ${fmtCur(totalInterest)} auf ${fmtCur(loanA)} Bankkredit = <b>${zinsQuote.toFixed(0)} %</b> Aufschlag.</div>`);
+  if (loanB > 0) {
+    insights.push(`<div class="insight-item"><strong>VPI-EFFEKT</strong> &nbsp; ${fmtCur(loanB)} wird zu ${fmtCur(loanBAdjusted)} nach ${payoutYear} Jahren — das sind ${vpiQuote.toFixed(0)} % Aufschlag durch Inflation.</div>`);
+  }
+  if (overlap && loanB > 0 && payoutYear < totalYearsA) {
+    insights.push(`<div class="insight-item"><strong>ÜBERLAPPUNG</strong> &nbsp; In Jahr ${payoutYear+1}–${Math.min(totalYearsA, payoutYear+loanBYears)} laufen beide Zahlungen parallel (<b>${fmtCur(phase2Rate)}/Mo</b>).</div>`);
+  }
+  document.getElementById('insights-body').innerHTML = insights.join('');
+
+  drawChart(timeline, payoutYear * 12, fixMonths, totalMonthsA);
+}
+
+function drawChart(timeline, payoutMonth, fixMonths, totalMonthsA) {
+  const canvas = document.getElementById('rateChart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+
+  const w = rect.width;
+  const h = rect.height;
+  const padL = 58, padR = 12, padT = 12, padB = 28;
+  const chartW = w - padL - padR;
+  const chartH = h - padT - padB;
+
+  const maxRate = Math.max(...timeline.map(t => t.total), 1);
+  const maxMonth = timeline.length;
+  const maxYear = Math.ceil(maxMonth / 12);
+
+  // Clear
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, w, h);
+
+  // Grid Y
+  ctx.strokeStyle = '#E8E3D5';
+  ctx.fillStyle = '#8A8478';
+  ctx.font = '10px "JetBrains Mono", monospace';
+  ctx.lineWidth = 0.5;
+  const ySteps = 4;
+  for (let i = 0; i <= ySteps; i++) {
+    const y = padT + chartH - (chartH * i / ySteps);
+    ctx.beginPath();
+    ctx.moveTo(padL, y);
+    ctx.lineTo(w - padR, y);
+    ctx.stroke();
+    const val = maxRate * i / ySteps;
+    ctx.textAlign = 'right';
+    ctx.fillText(Math.round(val).toLocaleString('de-AT'), padL - 6, y + 3);
+  }
+
+  // X axis labels
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#8A8478';
+  const yearStep = maxYear > 20 ? 5 : maxYear > 10 ? 2 : 1;
+  for (let y = 0; y <= maxYear; y += yearStep) {
+    const x = padL + (y * 12 / maxMonth) * chartW;
+    if (x <= w - padR) ctx.fillText('J' + y, x, h - 10);
+  }
+
+  // Markers (dashed vertical lines)
+  const markers = [
+    { month: fixMonths, label: 'Fix-Ende', color: '#8A8478' },
+    { month: payoutMonth, label: 'Teil B', color: '#3B6D11' }
+  ];
+  ctx.setLineDash([3, 3]);
+  ctx.lineWidth = 1;
+  markers.forEach(m => {
+    if (m.month > 0 && m.month < maxMonth) {
+      const x = padL + (m.month / maxMonth) * chartW;
+      ctx.strokeStyle = m.color;
+      ctx.globalAlpha = 0.4;
+      ctx.beginPath();
+      ctx.moveTo(x, padT);
+      ctx.lineTo(x, padT + chartH);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+  });
+  ctx.setLineDash([]);
+
+  const xStep = chartW / maxMonth;
+
+  // Teil A area
+  ctx.fillStyle = 'rgba(200, 75, 30, 0.20)';
+  ctx.strokeStyle = '#C84B1E';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(padL, padT + chartH);
+  timeline.forEach((t, i) => {
+    const x = padL + i * xStep;
+    const y = padT + chartH - (t.rateA / maxRate) * chartH;
+    ctx.lineTo(x, y);
+  });
+  ctx.lineTo(padL + timeline.length * xStep, padT + chartH);
+  ctx.closePath();
+  ctx.fill();
+
+  // Teil A stroke
+  ctx.beginPath();
+  timeline.forEach((t, i) => {
+    const x = padL + i * xStep;
+    const y = padT + chartH - (t.rateA / maxRate) * chartH;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Teil B area (stacked on top)
+  ctx.fillStyle = 'rgba(59, 109, 17, 0.22)';
+  const bPath = [];
+  timeline.forEach((t, i) => {
+    if (t.rateB > 0) {
+      const x = padL + i * xStep;
+      const yBase = padT + chartH - (t.rateA / maxRate) * chartH;
+      const yTop = padT + chartH - (t.total / maxRate) * chartH;
+      bPath.push({ x, yBase, yTop });
+    }
+  });
+  if (bPath.length > 0) {
+    ctx.beginPath();
+    ctx.moveTo(bPath[0].x, bPath[0].yBase);
+    bPath.forEach(p => ctx.lineTo(p.x, p.yTop));
+    for (let i = bPath.length - 1; i >= 0; i--) {
+      ctx.lineTo(bPath[i].x, bPath[i].yBase);
+    }
+    ctx.closePath();
+    ctx.fill();
+
+    // Teil B top stroke
+    ctx.strokeStyle = '#3B6D11';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    bPath.forEach((p, i) => {
+      if (i === 0) ctx.moveTo(p.x, p.yTop);
+      else ctx.lineTo(p.x, p.yTop);
+    });
+    ctx.stroke();
+  }
+
+  // Total bold outline
+  ctx.strokeStyle = '#1A1A1A';
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  timeline.forEach((t, i) => {
+    const x = padL + i * xStep;
+    const y = padT + chartH - (t.total / maxRate) * chartH;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+}
+
+function updateAll() {
+  outs.loanA.textContent = fmtCur(+els.loanA.value);
+  outs.fixYears.textContent = els.fixYears.value + ' J';
+  outs.totalYearsA.textContent = els.totalYearsA.value + ' J';
+  outs.fixRate.textContent = fmtPct(+els.fixRate.value);
+  outs.loanB.textContent = fmtCur(+els.loanB.value);
+  outs.payoutYear.textContent = els.payoutYear.value + ' J';
+  outs.loanBYears.textContent = els.loanBYears.value + ' J';
+  outs.vpi.textContent = fmtPct(+els.vpi.value);
+  outs.euribor.textContent = fmtPct(+els.euribor.value);
+  outs.margin.textContent = (+els.margin.value).toFixed(3).replace('.', ',') + ' %';
+  calc();
+}
+
+Object.keys(els).forEach(k => { els[k].oninput = updateAll; });
+
+// Presets
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const [lA, fixY, totalY, lB, payY, lBY] = btn.dataset.p.split(',').map(Number);
+    els.loanA.value = lA;
+    els.fixYears.value = fixY;
+    els.totalYearsA.value = totalY;
+    els.loanB.value = lB;
+    els.payoutYear.value = payY;
+    els.loanBYears.value = lBY;
+    updateAll();
+  };
+});
+
+// Deselect preset when user changes a slider
+Object.keys(els).forEach(k => {
+  els[k].addEventListener('input', () => {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  });
+});
+
+updateAll();
+window.addEventListener('resize', calc);
+</script>
+
+</body>
+</html>
