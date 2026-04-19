@@ -439,37 +439,32 @@ input[type="range"]::-moz-range-thumb {
   color: var(--bg);
 }
 
-.schedule-table {
-  width: 100%;
-  border-collapse: collapse;
+.schedule-grid {
   font-family: var(--mono);
   font-size: 12px;
   font-feature-settings: "tnum";
 }
-.schedule-table th {
-  text-align: right;
-  font-weight: 500;
+.sched-row {
+  display: grid;
+  grid-template-columns: 0.9fr 1fr 1fr 1fr 1.1fr;
+  gap: 8px;
+  padding: 4px 8px;
+  border-bottom: 1px dotted var(--line-soft);
+  break-inside: avoid;
+}
+.sched-row.head {
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink-faint);
-  padding: 6px 8px;
+  font-weight: 500;
   border-bottom: 1px solid var(--line);
+  padding-bottom: 6px;
 }
-.schedule-table th:first-child { text-align: left; }
-.schedule-table td {
-  padding: 5px 8px;
-  text-align: right;
-  border-bottom: 1px dotted var(--line-soft);
-  color: var(--ink);
-}
-.schedule-table td:first-child {
-  text-align: left;
-  color: var(--ink-soft);
-}
-.schedule-table tr:last-child td { border-bottom: none; }
-.schedule-table td.zins { color: var(--accent); }
-.schedule-table td.bal { font-weight: 500; }
+.sched-row > span { text-align: right; color: var(--ink); }
+.sched-row > span:first-child { text-align: left; color: var(--ink-soft); }
+.sched-row .zins { color: var(--accent); }
+.sched-row .bal { font-weight: 500; }
 .schedule-scroll { max-height: 320px; overflow-y: auto; position: relative; }
 
 .cell-tip {
@@ -817,6 +812,190 @@ canvas {
   color: var(--accent);
 }
 
+/* PRINT BUTTON + MODAL */
+.print-btn {
+  display: inline-block;
+  margin-top: 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--bg-card);
+  border: 1px solid var(--ink);
+  border-radius: 3px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.print-btn:hover { background: var(--ink); color: var(--bg); }
+
+.print-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(26,26,26,0.5);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+.print-modal.open { display: flex; }
+.print-modal-inner {
+  background: var(--bg-card);
+  border-radius: 6px;
+  padding: 28px 32px;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+.print-modal-inner h3 {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+.print-modal-inner .modal-sub {
+  font-size: 12px;
+  color: var(--ink-faint);
+  margin-bottom: 20px;
+}
+.opt-group { margin-bottom: 16px; }
+.opt-group .opt-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 6px;
+}
+.opt-group label {
+  display: block;
+  font-size: 13px;
+  padding: 4px 0;
+  cursor: pointer;
+  color: var(--ink);
+}
+.opt-group label input { accent-color: var(--accent); margin-right: 8px; }
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-soft);
+}
+.modal-actions button {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border-radius: 3px;
+  cursor: pointer;
+  border: 1px solid var(--line);
+}
+.modal-cancel { background: transparent; color: var(--ink-soft); }
+.modal-cancel:hover { border-color: var(--ink); color: var(--ink); }
+.modal-print { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.modal-print:hover { background: var(--accent); border-color: var(--accent); }
+
+/* PRINT STYLES — fit everything on a single A4 page */
+@media print {
+  body { background: white !important; font-size: 7.5px; -webkit-print-color-adjust: exact; print-color-adjust: exact; line-height: 1.25; }
+  body::before, body::after { display: none; }
+  .container { padding: 0; max-width: none; }
+  aside, .preset-btn, .presets, .print-btn, .print-modal, .expand-btn, .schedule-toggle, .chart-tip, footer, .panel-note { display: none !important; }
+
+  /* Header compact */
+  header { margin-bottom: 4px; padding-bottom: 3px; grid-template-columns: 1fr auto; border-bottom: 1px solid var(--line); }
+  h1 { font-size: 18px !important; line-height: 1 !important; }
+  .brand { margin-bottom: 3px; gap: 8px; }
+  .brand-mark { width: 18px; height: 18px; font-size: 11px; }
+  .brand-name { font-size: 8px; }
+  .tagline { text-align: right; font-size: 7px; margin-top: 0; line-height: 1.2; }
+
+  .layout { grid-template-columns: 1fr; gap: 0; }
+  .results-panel { border: none; padding: 0; box-shadow: none; }
+
+  /* Hero metrics tiny */
+  .hero-metrics { grid-template-columns: repeat(4, 1fr); gap: 6px; padding-bottom: 5px; margin-bottom: 6px; border-bottom: 1px solid var(--line); }
+  .hero-metric { gap: 1px; }
+  .hero-metric-label { font-size: 6.5px; letter-spacing: 0.1em; }
+  .hero-metric-value { font-size: 11px; line-height: 1; }
+  .hero-metric-sub { font-size: 6.5px; margin-top: 0; }
+
+  /* Two-column area: breakdowns side by side */
+  .result-section { margin-bottom: 5px; }
+  .section-title-row { margin-bottom: 3px; padding-bottom: 3px; }
+  .section-title { font-size: 10px; }
+  .section-tag { font-size: 6.5px; padding: 1px 4px; }
+  .breakdown { gap: 0 12px; }
+  .breakdown-row { font-size: 7px; padding: 1.5px 0; }
+
+  /* Chart — show small */
+  .chart-title { margin-bottom: 2px; }
+  .chart-legend { font-size: 6.5px; gap: 8px; }
+  canvas { max-height: 70px; height: 70px !important; }
+  .chart-wrap { padding: 2px 0; }
+  .chart-summary-row {
+    display: grid !important;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 10px;
+    margin-bottom: 5px;
+    align-items: stretch;
+  }
+  .chart-summary-row .chart-col { margin-bottom: 0; }
+  .chart-summary-row .total-summary { margin-top: 0; }
+
+  /* Insights and summary compact */
+  .insights { padding: 5px 8px; margin-top: 5px; border-left-width: 2px; }
+  .insights-title { font-size: 9px; margin-bottom: 3px; }
+  .insight-item { font-size: 7px; padding: 1px 0; line-height: 1.3; }
+  .insight-item strong { font-size: 6.5px; }
+
+  .total-summary { padding: 5px 8px; margin-top: 5px; background: #f5f1e8 !important; color: var(--ink) !important; border: 1px solid var(--ink); border-radius: 3px; }
+  .total-summary-title { font-size: 9px; margin-bottom: 3px; color: var(--ink) !important; }
+  .total-summary .breakdown-row { padding: 1.5px 0; font-size: 7px; }
+  .total-summary .breakdown-label, .total-summary .breakdown-value { color: var(--ink) !important; }
+  .total-summary .breakdown-value.highlight { color: var(--accent) !important; }
+
+  /* Schedule visibility driven by body classes */
+  .schedule-wrap { max-height: none !important; overflow: visible !important; }
+  body:not(.print-a) #schedule-a { display: none !important; }
+  body:not(.print-b) #schedule-b { display: none !important; }
+  body.print-a #schedule-a, body.print-b #schedule-b { margin-top: 4px; }
+  .schedule-scroll { max-height: none !important; overflow: visible !important; }
+  .schedule-inner { background: white !important; border: 1px solid var(--line-soft) !important; padding: 4px 6px; margin-top: 4px; }
+  .cell-tip-body { display: none !important; }
+  .cell-tip { border-bottom: none !important; }
+
+  /* Schedule ultra-compact multi-column */
+  .schedule-grid { column-gap: 4px; column-fill: balance; font-size: 5px; line-height: 1.1; letter-spacing: -0.02em; }
+  .schedule-grid.cols-2 { column-count: 2; }
+  .schedule-grid.cols-3 { column-count: 3; }
+  .schedule-grid.cols-4 { column-count: 4; }
+  .schedule-grid.cols-5 { column-count: 5; }
+  .schedule-grid.cols-6 { column-count: 6; }
+  .schedule-grid.cols-7 { column-count: 7; }
+  .schedule-grid.cols-8 { column-count: 8; }
+  .sched-row {
+    padding: 0 1px;
+    gap: 1px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border-bottom: none;
+    grid-template-columns: 0.55fr 0.85fr 0.75fr 0.85fr 0.95fr;
+  }
+  .sched-row.head { font-size: 4.5px; padding-bottom: 1px; break-after: avoid; border-bottom: 0.5px solid var(--line); margin-bottom: 1px; }
+
+  * { animation: none !important; transition: none !important; }
+
+  /* Force single page — hide anything that would overflow to a 2nd page */
+  html, body { height: auto; }
+  @page { margin: 6mm 6mm; size: A4; }
+}
+
 /* FOOTER */
 footer {
   margin-top: 48px;
@@ -873,8 +1052,32 @@ footer {
   <div class="tagline">
     <span class="dot"></span>Bankkredit + zinsfreie Rate<br>
     &nbsp;&nbsp;&nbsp;&nbsp;mit VPI-Indexierung
+    <button class="print-btn" id="printBtn" type="button">↓ Drucken / PDF</button>
   </div>
 </header>
+
+<div class="print-modal" id="printModal" aria-hidden="true">
+  <div class="print-modal-inner">
+    <h3>Druckoptionen</h3>
+    <p class="modal-sub">Wählen Sie, was in den Ausdruck aufgenommen werden soll.</p>
+    <div class="opt-group">
+      <div class="opt-title">Zahlungsplan Teil A</div>
+      <label><input type="radio" name="printA" value="none"> Nicht drucken</label>
+      <label><input type="radio" name="printA" value="year" checked> Jährlich</label>
+      <label><input type="radio" name="printA" value="month"> Monatlich</label>
+    </div>
+    <div class="opt-group">
+      <div class="opt-title">Zahlungsplan Teil B</div>
+      <label><input type="radio" name="printB" value="none"> Nicht drucken</label>
+      <label><input type="radio" name="printB" value="year" checked> Jährlich</label>
+      <label><input type="radio" name="printB" value="month"> Monatlich</label>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="printCancel" type="button">Abbrechen</button>
+      <button class="modal-print" id="printConfirm" type="button">Drucken</button>
+    </div>
+  </div>
+</div>
 
 <div class="layout">
 
@@ -887,7 +1090,6 @@ footer {
         <span class="panel-num">01 — Teil A</span>
       </div>
       <div class="panel-body">
-        <div class="panel-note">Minimum Teil A + Teil B: 300.000 €</div>
         <div class="slider-group">
           <div class="slider-head">
             <span class="slider-label">Kreditsumme</span>
@@ -900,21 +1102,21 @@ footer {
             <span class="slider-label">Fixzinsbindung</span>
             <span class="slider-value" id="fixYears-out">10 J</span>
           </div>
-          <input type="range" min="5" max="20" step="1" value="10" id="fixYears">
+          <input type="range" min="0" max="20" step="1" value="10" id="fixYears">
         </div>
         <div class="slider-group">
           <div class="slider-head">
             <span class="slider-label">Gesamtlaufzeit</span>
             <span class="slider-value" id="totalYearsA-out">20 J</span>
           </div>
-          <input type="range" min="10" max="30" step="1" value="20" id="totalYearsA">
+          <input type="range" min="0" max="30" step="1" value="20" id="totalYearsA">
         </div>
         <div class="slider-group">
           <div class="slider-head">
             <span class="slider-label">Fixzinssatz</span>
             <span class="slider-value" id="fixRate-out">3,15 %</span>
           </div>
-          <input type="range" min="2" max="5" step="0.05" value="3.15" id="fixRate">
+          <input type="range" min="0" max="5" step="0.05" value="3.15" id="fixRate">
         </div>
       </div>
     </div>
@@ -945,7 +1147,7 @@ footer {
             <span class="slider-label">Ratenzahlung über</span>
             <span class="slider-value" id="loanBYears-out">10 J</span>
           </div>
-          <input type="range" min="1" max="20" step="1" value="10" id="loanBYears">
+          <input type="range" min="0" max="20" step="1" value="10" id="loanBYears">
         </div>
         <div class="slider-group">
           <div class="slider-head">
@@ -1066,37 +1268,39 @@ footer {
         </div>
       </div>
 
-      <div class="result-section">
-        <div class="chart-title">
-          <h2 class="section-title">Raten über die <em>Laufzeit</em></h2>
-          <div class="chart-legend">
-            <span><span class="legend-dot a"></span>Teil A</span>
-            <span><span class="legend-dot b"></span>Teil B</span>
+      <div class="chart-summary-row">
+        <div class="result-section chart-col">
+          <div class="chart-title">
+            <h2 class="section-title">Raten über die <em>Laufzeit</em></h2>
+            <div class="chart-legend">
+              <span><span class="legend-dot a"></span>Teil A</span>
+              <span><span class="legend-dot b"></span>Teil B</span>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="rateChart"></canvas>
+            <div id="chartTip" class="chart-tip"></div>
           </div>
         </div>
-        <div class="chart-wrap">
-          <canvas id="rateChart"></canvas>
-          <div id="chartTip" class="chart-tip"></div>
-        </div>
-      </div>
 
-      <div class="total-summary">
-        <div class="total-summary-title">Gesamtübersicht</div>
-        <div class="breakdown-row">
-          <span class="breakdown-label">Alle Zahlungen zusammen</span>
-          <span class="breakdown-value" id="s-paid">0 €</span>
-        </div>
-        <div class="breakdown-row">
-          <span class="breakdown-label">Davon Bankzinsen</span>
-          <span class="breakdown-value highlight" id="s-zins">0 €</span>
-        </div>
-        <div class="breakdown-row">
-          <span class="breakdown-label">Davon VPI-Aufschlag</span>
-          <span class="breakdown-value" id="s-vpi">0 €</span>
-        </div>
-        <div class="breakdown-row">
-          <span class="breakdown-label">Mehrkosten gegenüber Nominal</span>
-          <span class="breakdown-value highlight" id="s-extra">0 €</span>
+        <div class="total-summary">
+          <div class="total-summary-title">Gesamtübersicht</div>
+          <div class="breakdown-row">
+            <span class="breakdown-label">Alle Zahlungen zusammen</span>
+            <span class="breakdown-value" id="s-paid">0 €</span>
+          </div>
+          <div class="breakdown-row">
+            <span class="breakdown-label">Davon Bankzinsen</span>
+            <span class="breakdown-value highlight" id="s-zins">0 €</span>
+          </div>
+          <div class="breakdown-row">
+            <span class="breakdown-label">Davon VPI-Aufschlag</span>
+            <span class="breakdown-value" id="s-vpi">0 €</span>
+          </div>
+          <div class="breakdown-row">
+            <span class="breakdown-label">Mehrkosten gegenüber Nominal</span>
+            <span class="breakdown-value highlight" id="s-extra">0 €</span>
+          </div>
         </div>
       </div>
 
@@ -1151,7 +1355,12 @@ function calc() {
   const varMonthsA = varYearsA * 12;
 
   // Bankkredit Phase 1 (Fix, Annuität auf Gesamtlaufzeit)
-  const annuityA1 = totalMonthsA > 0 ? loanA * fixRate / (1 - Math.pow(1 + fixRate, -totalMonthsA)) : 0;
+  let annuityA1 = 0;
+  if (totalMonthsA > 0 && loanA > 0) {
+    annuityA1 = fixRate > 0
+      ? loanA * fixRate / (1 - Math.pow(1 + fixRate, -totalMonthsA))
+      : loanA / totalMonthsA;
+  }
   let balA = loanA, interestA1 = 0;
   for (let i = 0; i < fixMonths; i++) {
     const interest = balA * fixRate;
@@ -1163,7 +1372,9 @@ function calc() {
   // Bankkredit Phase 2 (Variabel)
   let annuityA2 = 0, interestA2 = 0;
   if (varMonthsA > 0 && remainingA > 0) {
-    annuityA2 = remainingA * varRate / (1 - Math.pow(1 + varRate, -varMonthsA));
+    annuityA2 = varRate > 0
+      ? remainingA * varRate / (1 - Math.pow(1 + varRate, -varMonthsA))
+      : remainingA / varMonthsA;
     let bal = remainingA;
     for (let i = 0; i < varMonthsA; i++) {
       const interest = bal * varRate;
@@ -1262,18 +1473,46 @@ function calc() {
   document.getElementById('s-extra').textContent = fmtCur(totalInterest + vpiSurcharge);
 
   // Insights
-  const zinsQuote = totalInterest / loanA * 100;
-  const vpiQuote = vpiSurcharge / loanB * 100;
   const phase2Rate = annuityA2 + rateB;
-  const overlap = payoutYear < totalYearsA;
   const insights = [];
-  insights.push(`<div class="insight-item"><strong>MONATSLAST</strong> &nbsp; Phase 1 (J 1–${payoutYear}): <b>${fmtCur(annuityA1)}</b>. Höchste Belastung: <b>${fmtCur(maxRate)}</b> ab Jahr ${payoutYear+1}.</div>`);
-  insights.push(`<div class="insight-item"><strong>ZINSLAST</strong> &nbsp; ${fmtCur(totalInterest)} auf ${fmtCur(loanA)} Bankkredit = <b>${zinsQuote.toFixed(0)} %</b> Aufschlag.</div>`);
-  if (loanB > 0) {
-    insights.push(`<div class="insight-item"><strong>VPI-EFFEKT</strong> &nbsp; ${fmtCur(loanB)} wird zu ${fmtCur(loanBAdjusted)} nach ${payoutYear} Jahren — das sind ${vpiQuote.toFixed(0)} % Aufschlag durch Inflation.</div>`);
+
+  // MONATSLAST
+  if (loanA > 0 && payoutYear > 0) {
+    insights.push(`<div class="insight-item"><strong>MONATSLAST</strong> &nbsp; Phase 1 (J 1–${payoutYear}): <b>${fmtCur(annuityA1)}</b>. Höchste Belastung: <b>${fmtCur(maxRate)}</b> ab Jahr ${payoutYear+1}.</div>`);
+  } else if (loanA > 0 && loanB > 0 && payoutYear === 0) {
+    insights.push(`<div class="insight-item"><strong>MONATSLAST</strong> &nbsp; Ab Jahr 1: <b>${fmtCur(annuityA1 + rateB)}/Mo</b> (A + B parallel). Höchste Belastung: <b>${fmtCur(maxRate)}</b>.</div>`);
+  } else if (loanA > 0) {
+    insights.push(`<div class="insight-item"><strong>MONATSLAST</strong> &nbsp; Rate Teil A: <b>${fmtCur(annuityA1)}/Mo</b>. Höchste Belastung: <b>${fmtCur(maxRate)}</b>.</div>`);
+  } else if (loanB > 0) {
+    const startJahr = payoutYear + 1;
+    insights.push(`<div class="insight-item"><strong>MONATSLAST</strong> &nbsp; Teil B, ab Jahr ${startJahr}: <b>${fmtCur(rateB)}/Mo</b>${vpiDuringPayment && vpi > 0 ? ' (Jahr 1, steigt mit VPI)' : ''}.</div>`);
   }
-  if (overlap && loanB > 0 && payoutYear < totalYearsA) {
+
+  // ZINSLAST — only meaningful when there's a bank loan
+  if (loanA > 0) {
+    const zinsQuote = totalInterest / loanA * 100;
+    insights.push(`<div class="insight-item"><strong>ZINSLAST</strong> &nbsp; ${fmtCur(totalInterest)} auf ${fmtCur(loanA)} Bankkredit = <b>${zinsQuote.toFixed(0)} %</b> Aufschlag.</div>`);
+  }
+
+  // VPI-EFFEKT — distinguish pre-payout indexation vs during-payment
+  if (loanB > 0 && vpiSurcharge > 0.5) {
+    const vpiQuote = vpiSurcharge / loanB * 100;
+    if (payoutYear > 0 && !vpiDuringPayment) {
+      insights.push(`<div class="insight-item"><strong>VPI-EFFEKT</strong> &nbsp; ${fmtCur(loanB)} wird zu ${fmtCur(loanBAdjusted)} nach ${payoutYear} Jahren — <b>${vpiQuote.toFixed(0)} %</b> Aufschlag durch Inflation.</div>`);
+    } else if (payoutYear > 0 && vpiDuringPayment) {
+      insights.push(`<div class="insight-item"><strong>VPI-EFFEKT</strong> &nbsp; ${fmtCur(loanB)} → ${fmtCur(loanBAdjusted)} nach ${payoutYear} J, dann jährlich indexiert. Gesamtzahlung ${fmtCur(totalPaidB)} = <b>${vpiQuote.toFixed(0)} %</b> Aufschlag.</div>`);
+    } else if (vpiDuringPayment) {
+      insights.push(`<div class="insight-item"><strong>VPI-EFFEKT</strong> &nbsp; Ratenzahlung jährlich indexiert: Gesamtzahlung ${fmtCur(totalPaidB)} vs. ${fmtCur(loanB)} = <b>${vpiQuote.toFixed(0)} %</b> Aufschlag.</div>`);
+    }
+  }
+
+  // ÜBERLAPPUNG
+  if (loanA > 0 && loanB > 0 && payoutYear < totalYearsA && loanBYears > 0) {
     insights.push(`<div class="insight-item"><strong>ÜBERLAPPUNG</strong> &nbsp; In Jahr ${payoutYear+1}–${Math.min(totalYearsA, payoutYear+loanBYears)} laufen beide Zahlungen parallel (<b>${fmtCur(phase2Rate)}/Mo</b>).</div>`);
+  }
+
+  if (insights.length === 0) {
+    insights.push(`<div class="insight-item" style="color:var(--ink-faint);font-style:italic;">Alle Werte auf 0 — bitte Kreditsumme und Laufzeit einstellen.</div>`);
   }
   document.getElementById('insights-body').innerHTML = insights.join('');
 
@@ -1321,7 +1560,7 @@ function renderSchedule(which) {
   const zinsLabel = which === 'a' ? 'Zinsen' : 'VPI-Zins';
   const tilgLabel = 'Tilgung';
   const balLabel = which === 'a' ? 'Kreditsumme' : 'Restbetrag';
-  const header = `<tr><th>Periode</th><th>Rate</th><th>${zinsLabel}</th><th>${tilgLabel}</th><th>${balLabel}</th></tr>`;
+  const header = `<div class="sched-row head"><span>Periode</span><span>Rate</span><span>${zinsLabel}</span><span>${tilgLabel}</span><span>${balLabel}</span></div>`;
 
   const isB = which === 'b';
   const yrData = window._yearlyRatesB || [];
@@ -1350,15 +1589,15 @@ function renderSchedule(which) {
     const val = fmtCur(r.zins);
     if (isB && vpiActive && r.zins > 0.005) {
       const flip = rowIdx < 2 ? ' flip' : '';
-      return `<td class="zins"><span class="cell-tip${flip}">${val}${tipFor(yearIdx)}</span></td>`;
+      return `<span class="zins"><span class="cell-tip${flip}">${val}${tipFor(yearIdx)}</span></span>`;
     }
-    return `<td class="zins">${val}</td>`;
+    return `<span class="zins">${val}</span>`;
   };
 
   if (view === 'month') {
     rows = data.map((r, rowIdx) => {
       const yearIdx = isB ? Math.floor((r.m - (data[0]?.m || 1)) / 12) : 0;
-      return `<tr><td>M ${r.m}</td><td>${fmtCur(r.rate)}</td>${zinsCell(r, yearIdx, rowIdx)}<td>${fmtCur(r.tilgung)}</td><td class="bal">${fmtCur(r.bal)}</td></tr>`;
+      return `<div class="sched-row"><span>M ${r.m}</span><span>${fmtCur(r.rate)}</span>${zinsCell(r, yearIdx, rowIdx)}<span>${fmtCur(r.tilgung)}</span><span class="bal">${fmtCur(r.bal)}</span></div>`;
     }).join('');
   } else {
     const years = {};
@@ -1374,10 +1613,10 @@ function renderSchedule(which) {
     rows = yearOrder.map((y, idx) => {
       const r = years[y];
       const yearIdx = isB ? idx : 0;
-      return `<tr><td>Jahr ${y}</td><td>${fmtCur(r.rate)}</td>${zinsCell(r, yearIdx, idx)}<td>${fmtCur(r.tilgung)}</td><td class="bal">${fmtCur(r.bal)}</td></tr>`;
+      return `<div class="sched-row"><span>Jahr ${y}</span><span>${fmtCur(r.rate)}</span>${zinsCell(r, yearIdx, idx)}<span>${fmtCur(r.tilgung)}</span><span class="bal">${fmtCur(r.bal)}</span></div>`;
     }).join('');
   }
-  body.innerHTML = `<table class="schedule-table">${header}${rows}</table>`;
+  body.innerHTML = `<div class="schedule-grid">${header}${rows}</div>`;
 }
 
 let chartState = null;
@@ -1527,26 +1766,6 @@ function drawChart(timeline, payoutMonth, fixMonths, totalMonthsA) {
   ctx.stroke();
 }
 
-const MIN_TOTAL = 300000;
-
-function enforceMinTotal(changedKey) {
-  const a = +els.loanA.value;
-  const b = +els.loanB.value;
-  if (a + b >= MIN_TOTAL) return;
-  const needed = MIN_TOTAL - a - b;
-  // Push the OTHER slider up to compensate
-  const otherKey = changedKey === 'loanA' ? 'loanB' : 'loanA';
-  const other = els[otherKey];
-  const newOther = Math.min(+other.max, +other.value + needed);
-  other.value = newOther;
-  // If still short (other hit its max), clamp the just-changed slider back up
-  if ((+els.loanA.value) + (+els.loanB.value) < MIN_TOTAL) {
-    const fixKey = changedKey;
-    const fix = els[fixKey];
-    fix.value = MIN_TOTAL - (+other.value);
-  }
-}
-
 function updateAll() {
   outs.loanA.textContent = fmtCur(+els.loanA.value);
   outs.fixYears.textContent = els.fixYears.value + ' J';
@@ -1561,12 +1780,7 @@ function updateAll() {
   calc();
 }
 
-Object.keys(els).forEach(k => {
-  els[k].oninput = () => {
-    if (k === 'loanA' || k === 'loanB') enforceMinTotal(k);
-    updateAll();
-  };
-});
+Object.keys(els).forEach(k => { els[k].oninput = updateAll; });
 document.getElementById('vpiDuringPayment').addEventListener('change', updateAll);
 
 // Presets
@@ -1581,7 +1795,6 @@ document.querySelectorAll('.preset-btn').forEach(btn => {
     els.loanB.value = lB;
     els.payoutYear.value = payY;
     els.loanBYears.value = lBY;
-    enforceMinTotal('loanA');
     updateAll();
   };
 });
@@ -1686,6 +1899,65 @@ chartCanvas.addEventListener('mouseleave', () => {
   chartTip.classList.remove('visible');
   redrawChartOnly();
 });
+
+// Print modal
+const printBtn = document.getElementById('printBtn');
+const printModal = document.getElementById('printModal');
+const printCancel = document.getElementById('printCancel');
+const printConfirm = document.getElementById('printConfirm');
+
+printBtn.onclick = () => printModal.classList.add('open');
+printCancel.onclick = () => printModal.classList.remove('open');
+printModal.addEventListener('click', e => { if (e.target === printModal) printModal.classList.remove('open'); });
+
+function applyPrintColumns(which, view) {
+  const body = document.getElementById('schedule-' + which + '-body');
+  const grid = body.querySelector('.schedule-grid');
+  if (!grid) return;
+  grid.classList.remove('cols-2', 'cols-3', 'cols-4', 'cols-5', 'cols-6');
+  if (view === 'month') {
+    const rowCount = grid.querySelectorAll('.sched-row').length - 1;
+    let cls;
+    if (rowCount <= 24) cls = 'cols-3';
+    else if (rowCount <= 60) cls = 'cols-4';
+    else if (rowCount <= 120) cls = 'cols-5';
+    else if (rowCount <= 180) cls = 'cols-6';
+    else if (rowCount <= 240) cls = 'cols-7';
+    else cls = 'cols-8';
+    grid.classList.add(cls);
+  } else {
+    grid.classList.add('cols-2');
+  }
+}
+
+printConfirm.onclick = () => {
+  const a = document.querySelector('input[name="printA"]:checked').value;
+  const b = document.querySelector('input[name="printB"]:checked').value;
+  document.body.classList.toggle('print-a', a !== 'none');
+  document.body.classList.toggle('print-b', b !== 'none');
+  if (a !== 'none') {
+    scheduleView.a = a;
+    document.querySelectorAll('[data-for="a"] button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === a));
+    document.getElementById('schedule-a').classList.add('open');
+    renderSchedule('a');
+    applyPrintColumns('a', a);
+  }
+  if (b !== 'none') {
+    scheduleView.b = b;
+    document.querySelectorAll('[data-for="b"] button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === b));
+    document.getElementById('schedule-b').classList.add('open');
+    renderSchedule('b');
+    applyPrintColumns('b', b);
+  }
+  printModal.classList.remove('open');
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => {
+      document.body.classList.remove('print-a', 'print-b');
+      document.querySelectorAll('.schedule-grid').forEach(g => g.classList.remove('cols-2', 'cols-3'));
+    }, 500);
+  }, 200);
+};
 
 updateAll();
 window.addEventListener('resize', calc);
