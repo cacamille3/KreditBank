@@ -887,6 +887,7 @@ footer {
         <span class="panel-num">01 — Teil A</span>
       </div>
       <div class="panel-body">
+        <div class="panel-note">Minimum Teil A + Teil B: 300.000 €</div>
         <div class="slider-group">
           <div class="slider-head">
             <span class="slider-label">Kreditsumme</span>
@@ -992,6 +993,7 @@ footer {
         <button class="preset-btn" data-p="200000,10,15,100000,5,10">B früh (nach 5 J)</button>
         <button class="preset-btn" data-p="150000,10,15,150000,10,15">Weniger Bankkredit</button>
         <button class="preset-btn" data-p="250000,15,25,50000,10,10">Max Bank, min B</button>
+        <button class="preset-btn" data-p="100000,5,10,200000,0,15">Min Zinsen · 15 J</button>
       </div>
     </div>
 
@@ -1525,6 +1527,26 @@ function drawChart(timeline, payoutMonth, fixMonths, totalMonthsA) {
   ctx.stroke();
 }
 
+const MIN_TOTAL = 300000;
+
+function enforceMinTotal(changedKey) {
+  const a = +els.loanA.value;
+  const b = +els.loanB.value;
+  if (a + b >= MIN_TOTAL) return;
+  const needed = MIN_TOTAL - a - b;
+  // Push the OTHER slider up to compensate
+  const otherKey = changedKey === 'loanA' ? 'loanB' : 'loanA';
+  const other = els[otherKey];
+  const newOther = Math.min(+other.max, +other.value + needed);
+  other.value = newOther;
+  // If still short (other hit its max), clamp the just-changed slider back up
+  if ((+els.loanA.value) + (+els.loanB.value) < MIN_TOTAL) {
+    const fixKey = changedKey;
+    const fix = els[fixKey];
+    fix.value = MIN_TOTAL - (+other.value);
+  }
+}
+
 function updateAll() {
   outs.loanA.textContent = fmtCur(+els.loanA.value);
   outs.fixYears.textContent = els.fixYears.value + ' J';
@@ -1539,7 +1561,12 @@ function updateAll() {
   calc();
 }
 
-Object.keys(els).forEach(k => { els[k].oninput = updateAll; });
+Object.keys(els).forEach(k => {
+  els[k].oninput = () => {
+    if (k === 'loanA' || k === 'loanB') enforceMinTotal(k);
+    updateAll();
+  };
+});
 document.getElementById('vpiDuringPayment').addEventListener('change', updateAll);
 
 // Presets
@@ -1554,6 +1581,7 @@ document.querySelectorAll('.preset-btn').forEach(btn => {
     els.loanB.value = lB;
     els.payoutYear.value = payY;
     els.loanBYears.value = lBY;
+    enforceMinTotal('loanA');
     updateAll();
   };
 });
