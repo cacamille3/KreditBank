@@ -378,6 +378,257 @@ input[type="range"]::-moz-range-thumb {
 
 .breakdown-value.highlight { color: var(--accent); }
 
+/* EXPAND / SCHEDULE */
+.expand-btn {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+}
+.expand-btn:hover { border-color: var(--ink); color: var(--ink); }
+.expand-btn .chev { transition: transform 0.2s ease; display: inline-block; }
+.expand-btn.open .chev { transform: rotate(180deg); }
+
+.schedule-wrap {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.schedule-wrap.open { max-height: 2000px; }
+
+.schedule-inner {
+  margin-top: 14px;
+  padding: 14px 16px;
+  background: var(--bg);
+  border-radius: 4px;
+  border: 1px solid var(--line-soft);
+}
+
+.schedule-toggle {
+  display: inline-flex;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.schedule-toggle button {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+.schedule-toggle button.active {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-feature-settings: "tnum";
+}
+.schedule-table th {
+  text-align: right;
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line);
+}
+.schedule-table th:first-child { text-align: left; }
+.schedule-table td {
+  padding: 5px 8px;
+  text-align: right;
+  border-bottom: 1px dotted var(--line-soft);
+  color: var(--ink);
+}
+.schedule-table td:first-child {
+  text-align: left;
+  color: var(--ink-soft);
+}
+.schedule-table tr:last-child td { border-bottom: none; }
+.schedule-table td.zins { color: var(--accent); }
+.schedule-table td.bal { font-weight: 500; }
+.schedule-scroll { max-height: 320px; overflow-y: auto; position: relative; }
+
+.cell-tip {
+  position: relative;
+  cursor: help;
+  border-bottom: 1px dotted var(--accent);
+}
+.cell-tip .cell-tip-body {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  top: auto;
+  background: var(--ink);
+  color: var(--bg);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.55;
+  padding: 10px 12px;
+  border-radius: 4px;
+  width: 280px;
+  z-index: 20;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+  text-align: left;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: normal;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+.cell-tip:hover .cell-tip-body { visibility: visible; opacity: 1; }
+
+.cell-tip.flip .cell-tip-body {
+  bottom: auto;
+  top: calc(100% + 6px);
+}
+.cell-tip.flip .cell-tip-body::after {
+  top: auto;
+  bottom: 100%;
+  border-top-color: transparent;
+  border-bottom-color: var(--ink);
+}
+.cell-tip-body h5 {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: var(--bg);
+}
+.cell-tip-body .calc-line {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 3px 0;
+  color: rgba(245,241,232,0.85);
+}
+.cell-tip-body .calc-line b { color: #F4DCD0; }
+.cell-tip-body::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 10px;
+  border: 5px solid transparent;
+  border-top-color: var(--ink);
+}
+
+.vpi-opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line-soft);
+  font-size: 12px;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.vpi-opt input { cursor: pointer; accent-color: var(--accent); }
+
+.info-tip {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--line);
+  color: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: help;
+  margin-left: 4px;
+}
+.info-tip:hover, .info-tip:focus {
+  background: var(--ink);
+  color: var(--bg);
+  outline: none;
+}
+.info-tip .tip-body {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--bg);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.55;
+  padding: 10px 12px;
+  border-radius: 4px;
+  width: 300px;
+  max-height: 320px;
+  overflow-y: auto;
+  z-index: 10;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+  text-align: left;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.info-tip .tip-body .tip-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.info-tip .tip-body .tip-row:last-child { border-bottom: none; }
+.info-tip .tip-body .tip-row b { color: #F4DCD0; }
+.info-tip .tip-body h4 {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 13px;
+  margin-bottom: 8px;
+  color: var(--bg);
+}
+.info-tip:hover .tip-body, .info-tip:focus .tip-body {
+  visibility: visible;
+  opacity: 1;
+}
+.info-tip .tip-body::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--ink);
+}
+
 /* CHART */
 .chart-wrap {
   position: relative;
@@ -638,7 +889,7 @@ footer {
             <span class="slider-label">Fällig nach</span>
             <span class="slider-value" id="payoutYear-out">10 J</span>
           </div>
-          <input type="range" min="3" max="15" step="1" value="10" id="payoutYear">
+          <input type="range" min="0" max="15" step="1" value="10" id="payoutYear">
         </div>
         <div class="slider-group">
           <div class="slider-head">
@@ -654,6 +905,10 @@ footer {
           </div>
           <input type="range" min="0" max="6" step="0.1" value="2.5" id="vpi">
         </div>
+        <label class="vpi-opt">
+          <input type="checkbox" id="vpiDuringPayment">
+          <span>VPI auch während Ratenzahlung anwenden</span>
+        </label>
       </div>
     </div>
 
@@ -724,17 +979,41 @@ footer {
       <div class="result-section">
         <div class="section-title-row">
           <h2 class="section-title">Bankkredit — <em>Teil A</em></h2>
-          <span class="section-tag" id="tag-a">200.000 € · 20 J</span>
+          <div style="display:flex;align-items:center;">
+            <span class="section-tag" id="tag-a">200.000 € · 20 J</span>
+            <button class="expand-btn" data-target="schedule-a"><span>Zahlungsplan</span><span class="chev">▾</span></button>
+          </div>
         </div>
         <div class="breakdown" id="breakdown-a"></div>
+        <div class="schedule-wrap" id="schedule-a">
+          <div class="schedule-inner">
+            <div class="schedule-toggle" data-for="a">
+              <button class="active" data-view="month">Monatlich</button>
+              <button data-view="year">Jährlich</button>
+            </div>
+            <div class="schedule-scroll"><div id="schedule-a-body"></div></div>
+          </div>
+        </div>
       </div>
 
       <div class="result-section">
         <div class="section-title-row">
           <h2 class="section-title">Zinsfreie Rate — <em>Teil B</em></h2>
-          <span class="section-tag" id="tag-b">100.000 € · fällig 10 J</span>
+          <div style="display:flex;align-items:center;">
+            <span class="section-tag" id="tag-b">100.000 € · fällig 10 J</span>
+            <button class="expand-btn" data-target="schedule-b"><span>Zahlungsplan</span><span class="chev">▾</span></button>
+          </div>
         </div>
         <div class="breakdown" id="breakdown-b"></div>
+        <div class="schedule-wrap" id="schedule-b">
+          <div class="schedule-inner">
+            <div class="schedule-toggle" data-for="b">
+              <button class="active" data-view="month">Monatlich</button>
+              <button data-view="year">Jährlich</button>
+            </div>
+            <div class="schedule-scroll"><div id="schedule-b-body"></div></div>
+          </div>
+        </div>
       </div>
 
       <div class="result-section">
@@ -843,9 +1122,30 @@ function calc() {
   }
 
   // Teil B: VPI-angepasst, zinsfrei
+  const vpiDuringPayment = document.getElementById('vpiDuringPayment').checked;
   const loanBAdjusted = loanB * Math.pow(1 + vpi, payoutYear);
   const loanBMonths = loanBYears * 12;
-  const rateB = loanBMonths > 0 ? loanBAdjusted / loanBMonths : 0;
+  // Build per-year rates (end-of-year indexation). Yearly rate = balance / remaining years.
+  // After paying, remaining balance is multiplied by (1+vpi).
+  const yearlyRatesB = [];
+  let balStartB = loanBAdjusted;
+  for (let y = 0; y < loanBYears; y++) {
+    const remaining = loanBYears - y;
+    const yearlyPayment = balStartB / remaining;
+    const monthlyPayment = yearlyPayment / 12;
+    const balAfterPay = balStartB - yearlyPayment;
+    const balIndexed = (vpiDuringPayment && y < loanBYears - 1) ? balAfterPay * (1 + vpi) : balAfterPay;
+    yearlyRatesB.push({ startBal: balStartB, monthly: monthlyPayment, yearly: yearlyPayment, afterPay: balAfterPay, endBal: balIndexed, vpiCharge: balIndexed - balAfterPay });
+    balStartB = balIndexed;
+  }
+  const rateB = yearlyRatesB.length > 0 ? yearlyRatesB[0].monthly : 0;
+  const totalPaidB_calc = yearlyRatesB.reduce((s, y) => s + y.yearly, 0);
+
+  // Store for per-row tooltips in the schedule
+  window._yearlyRatesB = yearlyRatesB;
+  window._vpiActive = vpiDuringPayment && vpi > 0;
+  window._vpiVal = vpi;
+  window._loanBYears = loanBYears;
 
   // Timeline
   const maxMonths = Math.max(totalMonthsA, payoutYear * 12 + loanBMonths);
@@ -854,17 +1154,20 @@ function calc() {
     let rA = 0, rB = 0;
     if (m < fixMonths && m < totalMonthsA) rA = annuityA1;
     else if (m < totalMonthsA) rA = annuityA2;
-    if (m >= payoutYear * 12 && m < payoutYear * 12 + loanBMonths) rB = rateB;
+    if (m >= payoutYear * 12 && m < payoutYear * 12 + loanBMonths) {
+      const yIdx = Math.floor((m - payoutYear * 12) / 12);
+      rB = yearlyRatesB[yIdx] ? yearlyRatesB[yIdx].monthly : 0;
+    }
     timeline.push({ month: m, rateA: rA, rateB: rB, total: rA + rB });
   }
 
   const maxRate = Math.max(...timeline.map(t => t.total), 1);
   const totalInterest = interestA1 + interestA2;
   const totalPaidA = (annuityA1 * fixMonths) + (annuityA2 * varMonthsA);
-  const totalPaidB = rateB * loanBMonths;
+  const totalPaidB = totalPaidB_calc;
   const totalPaid = totalPaidA + totalPaidB;
   const totalNominal = loanA + loanBAdjusted;
-  const vpiSurcharge = loanBAdjusted - loanB;
+  const vpiSurcharge = totalPaidB - loanB;
 
   // HERO metrics
   document.getElementById('m-total').textContent = fmtCur(totalNominal);
@@ -894,7 +1197,7 @@ function calc() {
     <div class="breakdown-row"><span class="breakdown-label">Heutiger Wert</span><span class="breakdown-value">${fmtCur(loanB)}</span></div>
     <div class="breakdown-row"><span class="breakdown-label">Nach VPI-Anpassung</span><span class="breakdown-value">${fmtCur(loanBAdjusted)}</span></div>
     <div class="breakdown-row"><span class="breakdown-label">VPI-Steigerung</span><span class="breakdown-value">+${vpiPct.toFixed(1).replace('.',',')} %</span></div>
-    <div class="breakdown-row"><span class="breakdown-label">Monatsrate (zinsfrei)</span><span class="breakdown-value">${fmtCur(rateB)}</span></div>
+    <div class="breakdown-row"><span class="breakdown-label">Monatsrate${vpiDuringPayment && vpi>0 ? ' (VPI-indexiert)' : ' (zinsfrei)'}</span><span class="breakdown-value">${fmtCur(rateB)}</span></div>
     <div class="breakdown-row"><span class="breakdown-label">Zahlungsdauer</span><span class="breakdown-value">${loanBYears} J (${loanBMonths} M)</span></div>
     <div class="breakdown-row"><span class="breakdown-label">Zeitraum</span><span class="breakdown-value">J ${payoutYear+1}–${payoutYear+loanBYears}</span></div>
     <div class="breakdown-row"><span class="breakdown-label">Zahlung gesamt</span><span class="breakdown-value">${fmtCur(totalPaidB)}</span></div>
@@ -923,7 +1226,107 @@ function calc() {
   }
   document.getElementById('insights-body').innerHTML = insights.join('');
 
+  // Build detailed schedules (month-level) for A and B
+  scheduleA = [];
+  let bA = loanA;
+  for (let i = 0; i < totalMonthsA; i++) {
+    const useFix = i < fixMonths;
+    const rate = useFix ? fixRate : varRate;
+    const annu = useFix ? annuityA1 : annuityA2;
+    const interest = bA * rate;
+    const tilgung = annu - interest;
+    bA -= tilgung;
+    scheduleA.push({ m: i+1, rate: annu, zins: interest, tilgung, bal: Math.max(0, bA) });
+  }
+  scheduleB = [];
+  for (let y = 0; y < yearlyRatesB.length; y++) {
+    const yr = yearlyRatesB[y];
+    let runningBal = yr.startBal;
+    for (let mi = 0; mi < 12; mi++) {
+      const startMonth = payoutYear * 12 + y * 12 + mi + 1;
+      runningBal -= yr.monthly;
+      // VPI charge applied at end of year (last month)
+      const zins = (mi === 11) ? yr.vpiCharge : 0;
+      if (mi === 11) runningBal += yr.vpiCharge;
+      scheduleB.push({ m: startMonth, rate: yr.monthly, zins, tilgung: yr.monthly, bal: Math.max(0, runningBal) });
+    }
+  }
+  renderSchedule('a');
+  renderSchedule('b');
+
   drawChart(timeline, payoutYear * 12, fixMonths, totalMonthsA);
+}
+
+let scheduleA = [], scheduleB = [];
+const scheduleView = { a: 'month', b: 'month' };
+
+function renderSchedule(which) {
+  const data = which === 'a' ? scheduleA : scheduleB;
+  const view = scheduleView[which];
+  const body = document.getElementById('schedule-' + which + '-body');
+  if (!data.length) { body.innerHTML = '<div style="color:var(--ink-faint);font-size:12px;">Keine Zahlungen</div>'; return; }
+
+  let rows;
+  const zinsLabel = which === 'a' ? 'Zinsen' : 'VPI-Zins';
+  const tilgLabel = 'Tilgung';
+  const balLabel = which === 'a' ? 'Kreditsumme' : 'Restbetrag';
+  const header = `<tr><th>Periode</th><th>Rate</th><th>${zinsLabel}</th><th>${tilgLabel}</th><th>${balLabel}</th></tr>`;
+
+  const isB = which === 'b';
+  const yrData = window._yearlyRatesB || [];
+  const vpiActive = window._vpiActive;
+  const vpiVal = window._vpiVal || 0;
+
+  const tipFor = (yearIdx) => {
+    if (!isB || !vpiActive || !yrData[yearIdx]) return '';
+    const yr = yrData[yearIdx];
+    const remaining = (window._loanBYears || 0) - yearIdx;
+    let h = `<h5>VPI-Berechnung · Jahr ${yearIdx + 1}</h5>`;
+    h += `<div class="calc-line">Startsaldo: <b>${fmtCur(yr.startBal)}</b></div>`;
+    h += `<div class="calc-line">Jahresrate: ${fmtCur(yr.startBal)} ÷ ${remaining} = <b>${fmtCur(yr.yearly)}</b></div>`;
+    h += `<div class="calc-line">Monatsrate: <b>${fmtCur(yr.monthly)}</b></div>`;
+    h += `<div class="calc-line">Rest nach Zahlung: ${fmtCur(yr.startBal)} − ${fmtCur(yr.yearly)} = <b>${fmtCur(yr.afterPay)}</b></div>`;
+    if (yr.vpiCharge > 0.005) {
+      h += `<div class="calc-line">+ VPI ${(vpiVal*100).toFixed(2).replace('.',',')} %: ${fmtCur(yr.afterPay)} × ${(1+vpiVal).toFixed(4).replace('.',',')} = <b>${fmtCur(yr.endBal)}</b></div>`;
+      h += `<div class="calc-line">VPI-Zuschlag: <b>+${fmtCur(yr.vpiCharge)}</b></div>`;
+    } else {
+      h += `<div class="calc-line">Kein VPI-Zuschlag (letztes Jahr)</div>`;
+    }
+    return `<span class="cell-tip-body">${h}</span>`;
+  };
+
+  const zinsCell = (r, yearIdx, rowIdx) => {
+    const val = fmtCur(r.zins);
+    if (isB && vpiActive && r.zins > 0.005) {
+      const flip = rowIdx < 2 ? ' flip' : '';
+      return `<td class="zins"><span class="cell-tip${flip}">${val}${tipFor(yearIdx)}</span></td>`;
+    }
+    return `<td class="zins">${val}</td>`;
+  };
+
+  if (view === 'month') {
+    rows = data.map((r, rowIdx) => {
+      const yearIdx = isB ? Math.floor((r.m - (data[0]?.m || 1)) / 12) : 0;
+      return `<tr><td>M ${r.m}</td><td>${fmtCur(r.rate)}</td>${zinsCell(r, yearIdx, rowIdx)}<td>${fmtCur(r.tilgung)}</td><td class="bal">${fmtCur(r.bal)}</td></tr>`;
+    }).join('');
+  } else {
+    const years = {};
+    const yearOrder = [];
+    data.forEach(r => {
+      const y = Math.ceil(r.m / 12);
+      if (!years[y]) { years[y] = { rate: 0, zins: 0, tilgung: 0, bal: r.bal }; yearOrder.push(y); }
+      years[y].rate += r.rate;
+      years[y].zins += r.zins;
+      years[y].tilgung += r.tilgung;
+      years[y].bal = r.bal;
+    });
+    rows = yearOrder.map((y, idx) => {
+      const r = years[y];
+      const yearIdx = isB ? idx : 0;
+      return `<tr><td>Jahr ${y}</td><td>${fmtCur(r.rate)}</td>${zinsCell(r, yearIdx, idx)}<td>${fmtCur(r.tilgung)}</td><td class="bal">${fmtCur(r.bal)}</td></tr>`;
+    }).join('');
+  }
+  body.innerHTML = `<table class="schedule-table">${header}${rows}</table>`;
 }
 
 function drawChart(timeline, payoutMonth, fixMonths, totalMonthsA) {
@@ -1083,6 +1486,7 @@ function updateAll() {
 }
 
 Object.keys(els).forEach(k => { els[k].oninput = updateAll; });
+document.getElementById('vpiDuringPayment').addEventListener('change', updateAll);
 
 // Presets
 document.querySelectorAll('.preset-btn').forEach(btn => {
@@ -1104,6 +1508,28 @@ document.querySelectorAll('.preset-btn').forEach(btn => {
 Object.keys(els).forEach(k => {
   els[k].addEventListener('input', () => {
     document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  });
+});
+
+// Expand buttons
+document.querySelectorAll('.expand-btn').forEach(btn => {
+  btn.onclick = () => {
+    const target = document.getElementById(btn.dataset.target);
+    btn.classList.toggle('open');
+    target.classList.toggle('open');
+  };
+});
+
+// Monthly/Yearly toggles
+document.querySelectorAll('.schedule-toggle').forEach(tog => {
+  const which = tog.dataset.for;
+  tog.querySelectorAll('button').forEach(b => {
+    b.onclick = () => {
+      tog.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      scheduleView[which] = b.dataset.view;
+      renderSchedule(which);
+    };
   });
 });
 
