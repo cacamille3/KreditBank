@@ -365,6 +365,28 @@ input[type="range"]::-moz-range-thumb {
 
 .breakdown-row:last-child { border-bottom: none; }
 
+.split-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.split-col {
+  border: 1px solid var(--line-soft);
+  border-radius: 6px;
+  padding: 12px 14px;
+  background: var(--bg-soft, #fafafa);
+}
+.split-name {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.split-name span { font-family: var(--mono); color: var(--ink); letter-spacing: 0; text-transform: none; }
+@media (max-width: 640px) { .split-grid { grid-template-columns: 1fr; } }
+
 .breakdown-label {
   color: var(--ink-soft);
 }
@@ -964,7 +986,10 @@ canvas {
   .schedule-wrap { max-height: none !important; overflow: visible !important; }
   body:not(.print-a) #schedule-a { display: none !important; }
   body:not(.print-b) #schedule-b { display: none !important; }
-  body.print-a #schedule-a, body.print-b #schedule-b { margin-top: 4px; }
+  body:not(.print-p1) #schedule-p1 { display: none !important; }
+  body:not(.print-p2) #schedule-p2 { display: none !important; }
+  body.print-a #schedule-a, body.print-b #schedule-b,
+  body.print-p1 #schedule-p1, body.print-p2 #schedule-p2 { margin-top: 4px; }
   .schedule-scroll { max-height: none !important; overflow: visible !important; }
   .schedule-inner { background: white !important; border: 1px solid var(--line-soft) !important; padding: 4px 6px; margin-top: 4px; }
   .cell-tip-body { display: none !important; }
@@ -1071,6 +1096,18 @@ footer {
       <label><input type="radio" name="printB" value="none"> Nicht drucken</label>
       <label><input type="radio" name="printB" value="year" checked> Jährlich</label>
       <label><input type="radio" name="printB" value="month"> Monatlich</label>
+    </div>
+    <div class="opt-group">
+      <div class="opt-title">Zahlungsplan Person 1</div>
+      <label><input type="radio" name="printP1" value="none" checked> Nicht drucken</label>
+      <label><input type="radio" name="printP1" value="year"> Jährlich</label>
+      <label><input type="radio" name="printP1" value="month"> Monatlich</label>
+    </div>
+    <div class="opt-group">
+      <div class="opt-title">Zahlungsplan Person 2</div>
+      <label><input type="radio" name="printP2" value="none" checked> Nicht drucken</label>
+      <label><input type="radio" name="printP2" value="year"> Jährlich</label>
+      <label><input type="radio" name="printP2" value="month"> Monatlich</label>
     </div>
     <div class="modal-actions">
       <button class="modal-cancel" id="printCancel" type="button">Abbrechen</button>
@@ -1182,6 +1219,31 @@ footer {
             <span class="slider-value" id="margin-out">0,965 %</span>
           </div>
           <input type="range" min="0.5" max="2" step="0.005" value="0.965" id="margin">
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Aufteilung</span>
+        <span class="panel-num">04 — 2 Personen</span>
+      </div>
+      <div class="panel-body">
+        <div class="panel-note">Rückzahlung anteilig auf 2 Personen aufteilen</div>
+        <div class="slider-group">
+          <div class="slider-head">
+            <span class="slider-label">Anteil Person 1</span>
+            <span class="slider-value" id="share1-out">50 %</span>
+          </div>
+          <input type="range" min="0" max="100" step="5" value="50" id="share1">
+        </div>
+        <div class="breakdown-row" style="margin-top:6px">
+          <span class="breakdown-label">Person 1</span>
+          <span class="breakdown-value" id="share1-amount">0 €</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-label">Person 2</span>
+          <span class="breakdown-value" id="share2-amount">0 €</span>
         </div>
       </div>
     </div>
@@ -1304,6 +1366,47 @@ footer {
         </div>
       </div>
 
+      <div class="result-section">
+        <div class="section-title-row">
+          <h2 class="section-title">Rückzahlung pro <em>Person</em></h2>
+          <span class="section-tag" id="tag-split">50 / 50 %</span>
+        </div>
+        <div class="split-grid">
+          <div class="split-col">
+            <div class="split-name">Person 1 · <span id="p1-share">0 €</span></div>
+            <div class="breakdown-row"><span class="breakdown-label">Höchste Monatsrate</span><span class="breakdown-value" id="p1-monthly">0 €</span></div>
+            <div class="breakdown-row"><span class="breakdown-label">Jahr (Spitze)</span><span class="breakdown-value" id="p1-yearly">0 €</span></div>
+            <div class="breakdown-row"><span class="breakdown-label">Insgesamt</span><span class="breakdown-value highlight" id="p1-total">0 €</span></div>
+            <button class="expand-btn" data-target="schedule-p1" style="margin-top:10px"><span>Zahlungsplan</span><span class="chev">▾</span></button>
+            <div class="schedule-wrap" id="schedule-p1">
+              <div class="schedule-inner">
+                <div class="schedule-toggle" data-for="p1">
+                  <button class="active" data-view="month">Monatlich</button>
+                  <button data-view="year">Jährlich</button>
+                </div>
+                <div class="schedule-scroll"><div id="schedule-p1-body"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="split-col">
+            <div class="split-name">Person 2 · <span id="p2-share">0 €</span></div>
+            <div class="breakdown-row"><span class="breakdown-label">Höchste Monatsrate</span><span class="breakdown-value" id="p2-monthly">0 €</span></div>
+            <div class="breakdown-row"><span class="breakdown-label">Jahr (Spitze)</span><span class="breakdown-value" id="p2-yearly">0 €</span></div>
+            <div class="breakdown-row"><span class="breakdown-label">Insgesamt</span><span class="breakdown-value highlight" id="p2-total">0 €</span></div>
+            <button class="expand-btn" data-target="schedule-p2" style="margin-top:10px"><span>Zahlungsplan</span><span class="chev">▾</span></button>
+            <div class="schedule-wrap" id="schedule-p2">
+              <div class="schedule-inner">
+                <div class="schedule-toggle" data-for="p2">
+                  <button class="active" data-view="month">Monatlich</button>
+                  <button data-view="year">Jährlich</button>
+                </div>
+                <div class="schedule-scroll"><div id="schedule-p2-body"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="insights">
         <div class="insights-title">Was diese Kombination bedeutet</div>
         <div id="insights-body"></div>
@@ -1323,7 +1426,7 @@ footer {
 
 <script>
 const els = {};
-['loanA','fixYears','totalYearsA','fixRate','loanB','payoutYear','loanBYears','vpi','euribor','margin'].forEach(k => {
+['loanA','fixYears','totalYearsA','fixRate','loanB','payoutYear','loanBYears','vpi','euribor','margin','share1'].forEach(k => {
   els[k] = document.getElementById(k);
 });
 const outs = {};
@@ -1467,6 +1570,24 @@ function calc() {
   `;
 
   // Summary
+  const share1Pct = +els.share1.value;
+  const totalLoan = loanA + loanB;
+  const p1Amount = totalLoan * share1Pct / 100;
+  const p2Amount = totalLoan - p1Amount;
+  const r1 = share1Pct / 100;
+  const r2 = 1 - r1;
+  document.getElementById('share1-amount').textContent = fmtCur(p1Amount);
+  document.getElementById('share2-amount').textContent = fmtCur(p2Amount);
+  document.getElementById('tag-split').textContent = `${share1Pct} / ${100 - share1Pct} %`;
+  document.getElementById('p1-share').textContent = fmtCur(p1Amount);
+  document.getElementById('p2-share').textContent = fmtCur(p2Amount);
+  document.getElementById('p1-monthly').textContent = fmtCur(maxRate * r1);
+  document.getElementById('p2-monthly').textContent = fmtCur(maxRate * r2);
+  document.getElementById('p1-yearly').textContent = fmtCur(maxRate * 12 * r1);
+  document.getElementById('p2-yearly').textContent = fmtCur(maxRate * 12 * r2);
+  document.getElementById('p1-total').textContent = fmtCur(totalPaid * r1);
+  document.getElementById('p2-total').textContent = fmtCur(totalPaid * r2);
+
   document.getElementById('s-paid').textContent = fmtCur(totalPaid);
   document.getElementById('s-zins').textContent = fmtCur(totalInterest);
   document.getElementById('s-vpi').textContent = fmtCur(vpiSurcharge);
@@ -1544,11 +1665,53 @@ function calc() {
   renderSchedule('a');
   renderSchedule('b');
 
+  window._personRatios = { p1: r1, p2: r2 };
+  renderPersonSchedule('p1');
+  renderPersonSchedule('p2');
+
   drawChart(timeline, payoutYear * 12, fixMonths, totalMonthsA);
 }
 
 let scheduleA = [], scheduleB = [];
-const scheduleView = { a: 'month', b: 'month' };
+const scheduleView = { a: 'month', b: 'month', p1: 'month', p2: 'month' };
+
+function renderPersonSchedule(which) {
+  const ratio = (window._personRatios || {})[which] || 0;
+  const view = scheduleView[which];
+  const body = document.getElementById('schedule-' + which + '-body');
+  const byMonth = new Map();
+  scheduleA.forEach(r => { byMonth.set(r.m, { m: r.m, a: r.rate, b: 0 }); });
+  scheduleB.forEach(r => {
+    const prev = byMonth.get(r.m) || { m: r.m, a: 0, b: 0 };
+    prev.b += r.rate;
+    byMonth.set(r.m, prev);
+  });
+  const data = [...byMonth.values()].sort((x, y) => x.m - y.m);
+  if (!data.length || ratio === 0) { body.innerHTML = '<div style="color:var(--ink-faint);font-size:12px;">Keine Zahlungen</div>'; return; }
+  const header = `<div class="sched-row head"><span>Periode</span><span>Teil A</span><span>Teil B</span><span>Gesamt</span><span>Anteil</span></div>`;
+  let rows;
+  if (view === 'month') {
+    rows = data.map(r => {
+      const tot = r.a + r.b;
+      return `<div class="sched-row"><span>M ${r.m}</span><span>${fmtCur(r.a)}</span><span>${fmtCur(r.b)}</span><span>${fmtCur(tot)}</span><span class="bal">${fmtCur(tot * ratio)}</span></div>`;
+    }).join('');
+  } else {
+    const years = {};
+    const yearOrder = [];
+    data.forEach(r => {
+      const y = Math.ceil(r.m / 12);
+      if (!years[y]) { years[y] = { a: 0, b: 0 }; yearOrder.push(y); }
+      years[y].a += r.a;
+      years[y].b += r.b;
+    });
+    rows = yearOrder.map(y => {
+      const r = years[y];
+      const tot = r.a + r.b;
+      return `<div class="sched-row"><span>Jahr ${y}</span><span>${fmtCur(r.a)}</span><span>${fmtCur(r.b)}</span><span>${fmtCur(tot)}</span><span class="bal">${fmtCur(tot * ratio)}</span></div>`;
+    }).join('');
+  }
+  body.innerHTML = `<div class="schedule-grid person">${header}${rows}</div>`;
+}
 
 function renderSchedule(which) {
   const data = which === 'a' ? scheduleA : scheduleB;
@@ -1777,6 +1940,7 @@ function updateAll() {
   outs.vpi.textContent = fmtPct(+els.vpi.value);
   outs.euribor.textContent = fmtPct(+els.euribor.value);
   outs.margin.textContent = (+els.margin.value).toFixed(3).replace('.', ',') + ' %';
+  outs.share1.textContent = els.share1.value + ' %';
   calc();
 }
 
@@ -1823,7 +1987,8 @@ document.querySelectorAll('.schedule-toggle').forEach(tog => {
       tog.querySelectorAll('button').forEach(x => x.classList.remove('active'));
       b.classList.add('active');
       scheduleView[which] = b.dataset.view;
-      renderSchedule(which);
+      if (which === 'p1' || which === 'p2') renderPersonSchedule(which);
+      else renderSchedule(which);
     };
   });
 });
@@ -1910,6 +2075,11 @@ printBtn.onclick = () => printModal.classList.add('open');
 printCancel.onclick = () => printModal.classList.remove('open');
 printModal.addEventListener('click', e => { if (e.target === printModal) printModal.classList.remove('open'); });
 
+function renderByKey(which) {
+  if (which === 'p1' || which === 'p2') renderPersonSchedule(which);
+  else renderSchedule(which);
+}
+
 function applyPrintColumns(which, view) {
   const body = document.getElementById('schedule-' + which + '-body');
   const grid = body.querySelector('.schedule-grid');
@@ -1931,30 +2101,28 @@ function applyPrintColumns(which, view) {
 }
 
 printConfirm.onclick = () => {
-  const a = document.querySelector('input[name="printA"]:checked').value;
-  const b = document.querySelector('input[name="printB"]:checked').value;
-  document.body.classList.toggle('print-a', a !== 'none');
-  document.body.classList.toggle('print-b', b !== 'none');
-  if (a !== 'none') {
-    scheduleView.a = a;
-    document.querySelectorAll('[data-for="a"] button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === a));
-    document.getElementById('schedule-a').classList.add('open');
-    renderSchedule('a');
-    applyPrintColumns('a', a);
-  }
-  if (b !== 'none') {
-    scheduleView.b = b;
-    document.querySelectorAll('[data-for="b"] button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === b));
-    document.getElementById('schedule-b').classList.add('open');
-    renderSchedule('b');
-    applyPrintColumns('b', b);
-  }
+  const selections = {
+    a:  document.querySelector('input[name="printA"]:checked').value,
+    b:  document.querySelector('input[name="printB"]:checked').value,
+    p1: document.querySelector('input[name="printP1"]:checked').value,
+    p2: document.querySelector('input[name="printP2"]:checked').value,
+  };
+  Object.entries(selections).forEach(([k, v]) => {
+    document.body.classList.toggle('print-' + k, v !== 'none');
+    if (v !== 'none') {
+      scheduleView[k] = v;
+      document.querySelectorAll(`[data-for="${k}"] button`).forEach(btn => btn.classList.toggle('active', btn.dataset.view === v));
+      document.getElementById('schedule-' + k).classList.add('open');
+      renderByKey(k);
+      applyPrintColumns(k, v);
+    }
+  });
   printModal.classList.remove('open');
   setTimeout(() => {
     window.print();
     setTimeout(() => {
-      document.body.classList.remove('print-a', 'print-b');
-      document.querySelectorAll('.schedule-grid').forEach(g => g.classList.remove('cols-2', 'cols-3'));
+      document.body.classList.remove('print-a', 'print-b', 'print-p1', 'print-p2');
+      document.querySelectorAll('.schedule-grid').forEach(g => g.classList.remove('cols-2', 'cols-3', 'cols-4', 'cols-5', 'cols-6', 'cols-7', 'cols-8'));
     }, 500);
   }, 200);
 };
