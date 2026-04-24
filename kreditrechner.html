@@ -269,6 +269,19 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: 0 0 0 1px var(--ink);
 }
 
+input[type="range"]:focus::-webkit-slider-thumb {
+  background: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+input[type="range"]:focus::-moz-range-thumb {
+  background: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.slider-group:has(input[type="range"]:focus) .slider-label,
+.slider-group:has(input[type="range"]:focus) .slider-value {
+  color: var(--accent);
+}
+
 /* RESULTS */
 .results-panel {
   background: var(--bg-card);
@@ -2137,6 +2150,19 @@ printConfirm.onclick = () => {
     }, 500);
   }, 200);
 };
+
+document.querySelectorAll('input[type="range"]').forEach(r => {
+  r.addEventListener('pointerdown', () => r.focus());
+  r.addEventListener('click', () => r.focus());
+});
+document.querySelectorAll('.slider-group').forEach(g => {
+  const range = g.querySelector('input[type="range"]');
+  if (!range) return;
+  g.style.cursor = 'pointer';
+  g.addEventListener('click', e => {
+    if (e.target !== range) range.focus();
+  });
+});
 
 updateAll();
 window.addEventListener('resize', calc);
