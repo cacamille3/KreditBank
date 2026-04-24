@@ -1048,10 +1048,11 @@ canvas {
   .cell-tip { border-bottom: none !important; }
 
   /* Schedule: split rows into 2 columns (left + right) to save vertical space */
-  .schedule-grid { font-size: 6px; line-height: 1.2; letter-spacing: -0.02em; }
-  .schedule-split { display: flex; gap: 12px; align-items: flex-start; }
+  .schedule-grid { font-size: 6px; line-height: 1.2; letter-spacing: -0.02em; break-inside: auto; page-break-inside: auto; }
+  .schedule-split { display: flex; gap: 12px; align-items: flex-start; break-inside: auto; page-break-inside: auto; }
   .schedule-split > .schedule-grid { flex: 1 1 0; min-width: 0; }
   .schedule-split > .schedule-grid + .schedule-grid { border-left: 1px solid var(--line-soft); padding-left: 10px; }
+  .schedule-wrap, .schedule-inner, .schedule-scroll, .result-section { break-inside: auto !important; page-break-inside: auto !important; overflow: visible !important; }
   .cell-tip { border-bottom: none !important; position: static !important; }
   .cell-tip .cell-tip-body { display: none !important; }
   .sched-row {
@@ -2244,6 +2245,7 @@ printConfirm.onclick = () => {
       document.getElementById('schedule-' + k).classList.add('open');
       renderByKey(k);
       applyPrintColumns(k, v);
+      splitScheduleForPrint(k);
     }
   });
   printModal.classList.remove('open');
@@ -2252,6 +2254,7 @@ printConfirm.onclick = () => {
     setTimeout(() => {
       document.body.classList.remove('print-a', 'print-b', 'print-p1', 'print-p2');
       document.querySelectorAll('.schedule-grid').forEach(g => g.classList.remove('cols-2', 'cols-3', 'cols-4', 'cols-5', 'cols-6', 'cols-7', 'cols-8'));
+      ['a','b','p1','p2'].forEach(renderByKey);
     }, 500);
   }, 200);
 };
