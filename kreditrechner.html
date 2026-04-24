@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
 <title>Kreditrechner — Bankkredit + Zinsfreie Rate</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -171,6 +172,27 @@ h1 em {
   color: var(--ink-faint);
   text-transform: uppercase;
 }
+.panel-actions {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+}
+.panel-btn {
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 0;
+  transition: color .15s, border-color .15s;
+}
+.panel-btn:hover:not(:disabled) { color: var(--ink); border-color: var(--ink); }
+.panel-btn:disabled { opacity: 0.35; cursor: default; }
 
 .panel-body {
   padding: 20px;
@@ -1025,15 +1047,15 @@ canvas {
   .cell-tip-body { display: none !important; }
   .cell-tip { border-bottom: none !important; }
 
-  /* Schedule ultra-compact multi-column */
-  .schedule-grid { column-gap: 4px; column-fill: balance; font-size: 5px; line-height: 1.1; letter-spacing: -0.02em; }
-  .schedule-grid.cols-2 { column-count: 2; }
-  .schedule-grid.cols-3 { column-count: 3; }
-  .schedule-grid.cols-4 { column-count: 4; }
-  .schedule-grid.cols-5 { column-count: 5; }
-  .schedule-grid.cols-6 { column-count: 6; }
-  .schedule-grid.cols-7 { column-count: 7; }
-  .schedule-grid.cols-8 { column-count: 8; }
+  /* Schedule: split rows into 2 columns (left + right) to save vertical space */
+  .schedule-grid,
+  #schedule-a-body .schedule-grid,
+  #schedule-b-body .schedule-grid,
+  #schedule-p1-body .schedule-grid,
+  #schedule-p2-body .schedule-grid { column-gap: 16px !important; column-fill: balance !important; font-size: 6px !important; line-height: 1.15 !important; letter-spacing: -0.02em !important; column-count: 2 !important; column-rule: 1px solid var(--line-soft) !important; display: block !important; height: auto !important; }
+  .schedule-grid > .sched-row { display: grid !important; width: 100% !important; break-inside: avoid !important; page-break-inside: avoid !important; }
+  .cell-tip { border-bottom: none !important; position: static !important; }
+  .cell-tip .cell-tip-body { display: none !important; }
   .sched-row {
     padding: 0 1px;
     gap: 1px;
@@ -1155,6 +1177,11 @@ footer {
       <div class="panel-header">
         <span class="panel-title">Bankkredit</span>
         <span class="panel-num">01 — Teil A</span>
+        <span class="panel-actions">
+          <button class="panel-btn" data-reset="a" type="button" title="Zurücksetzen">↺</button>
+          <button class="panel-btn" data-zero="a" type="button" title="Alles auf 0">0</button>
+          <button class="panel-btn" data-undo="a" type="button" title="Rückgängig" disabled>↶</button>
+        </span>
       </div>
       <div class="panel-body">
         <div class="slider-group">
@@ -1207,6 +1234,11 @@ footer {
       <div class="panel-header">
         <span class="panel-title">Zinsfreie Rate</span>
         <span class="panel-num">02 — Teil B</span>
+        <span class="panel-actions">
+          <button class="panel-btn" data-reset="b" type="button" title="Zurücksetzen">↺</button>
+          <button class="panel-btn" data-zero="b" type="button" title="Alles auf 0">0</button>
+          <button class="panel-btn" data-undo="b" type="button" title="Rückgängig" disabled>↶</button>
+        </span>
       </div>
       <div class="panel-body">
         <div class="panel-note">Fälligkeit später, keine Zinsen — aber VPI-indexiert</div>
@@ -1255,9 +1287,9 @@ footer {
         <div class="slider-group">
           <div class="slider-head">
             <span class="slider-label">Betrag Person 1</span>
-            <span class="slider-value" id="share1-out">150.000 €</span>
+            <span class="slider-value" id="share1-out">225.000 €</span>
           </div>
-          <input type="range" min="0" max="650000" step="5000" value="150000" id="share1">
+          <input type="range" min="0" max="650000" step="5000" value="225000" id="share1">
         </div>
         <div class="breakdown-row" style="margin-top:6px">
           <span class="breakdown-label">Person 1</span>
@@ -1984,6 +2016,58 @@ document.querySelectorAll('.preset-btn').forEach(btn => {
     els.payoutYear.value = payY;
     els.loanBYears.value = lBY;
     updateAll();
+  };
+});
+
+// Reset / Undo for Teil A and Teil B
+const defaultsA = { loanA: 200000, fixYears: 10, totalYearsA: 20, fixRate: 3.15, euribor: 2.17, margin: 0.965 };
+const defaultsB = { loanB: 100000, payoutYear: 10, loanBYears: 10, vpi: 2.5 };
+const snapshots = { a: null, b: null };
+
+function snapshot(which) {
+  const keys = which === 'a' ? Object.keys(defaultsA) : Object.keys(defaultsB);
+  const snap = {};
+  keys.forEach(k => { snap[k] = els[k].value; });
+  if (which === 'b') snap.vpiDuringPayment = document.getElementById('vpiDuringPayment').checked;
+  return snap;
+}
+
+function applyValues(vals) {
+  Object.entries(vals).forEach(([k, v]) => {
+    if (k === 'vpiDuringPayment') document.getElementById('vpiDuringPayment').checked = v;
+    else if (els[k]) els[k].value = v;
+  });
+  updateAll();
+}
+
+document.querySelectorAll('[data-reset]').forEach(btn => {
+  btn.onclick = () => {
+    const which = btn.dataset.reset;
+    snapshots[which] = snapshot(which);
+    const defaults = which === 'a' ? defaultsA : { ...defaultsB, vpiDuringPayment: false };
+    applyValues(defaults);
+    document.querySelector(`[data-undo="${which}"]`).disabled = false;
+  };
+});
+document.querySelectorAll('[data-zero]').forEach(btn => {
+  btn.onclick = () => {
+    const which = btn.dataset.zero;
+    snapshots[which] = snapshot(which);
+    const keys = which === 'a' ? Object.keys(defaultsA) : Object.keys(defaultsB);
+    const zeros = {};
+    keys.forEach(k => { zeros[k] = 0; });
+    if (which === 'b') zeros.vpiDuringPayment = false;
+    applyValues(zeros);
+    document.querySelector(`[data-undo="${which}"]`).disabled = false;
+  };
+});
+document.querySelectorAll('[data-undo]').forEach(btn => {
+  btn.onclick = () => {
+    const which = btn.dataset.undo;
+    if (!snapshots[which]) return;
+    applyValues(snapshots[which]);
+    snapshots[which] = null;
+    btn.disabled = true;
   };
 });
 
