@@ -183,6 +183,23 @@ h1 em {
   margin-bottom: 14px;
   line-height: 1.4;
 }
+.sub-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 6px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-weight: 500;
+}
+.sub-divider::before, .sub-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line-soft);
+}
 
 /* SLIDERS */
 .slider-group {
@@ -1155,6 +1172,21 @@ footer {
           </div>
           <input type="range" min="0" max="5" step="0.05" value="3.15" id="fixRate">
         </div>
+        <div class="sub-divider"><span>Variabler Zins</span></div>
+        <div class="slider-group">
+          <div class="slider-head">
+            <span class="slider-label">3M Euribor</span>
+            <span class="slider-value" id="euribor-out">2,17 %</span>
+          </div>
+          <input type="range" min="0" max="6" step="0.1" value="2.17" id="euribor">
+        </div>
+        <div class="slider-group">
+          <div class="slider-head">
+            <span class="slider-label">Aufschlag Bank</span>
+            <span class="slider-value" id="margin-out">0,965 %</span>
+          </div>
+          <input type="range" min="0" max="2" step="0.005" value="0.965" id="margin">
+        </div>
       </div>
     </div>
 
@@ -1202,40 +1234,17 @@ footer {
 
     <div class="panel">
       <div class="panel-header">
-        <span class="panel-title">Variabler Zins</span>
-        <span class="panel-num">03 — Markt</span>
-      </div>
-      <div class="panel-body">
-        <div class="slider-group">
-          <div class="slider-head">
-            <span class="slider-label">3M Euribor</span>
-            <span class="slider-value" id="euribor-out">2,17 %</span>
-          </div>
-          <input type="range" min="0.5" max="6" step="0.1" value="2.17" id="euribor">
-        </div>
-        <div class="slider-group">
-          <div class="slider-head">
-            <span class="slider-label">Aufschlag Bank</span>
-            <span class="slider-value" id="margin-out">0,965 %</span>
-          </div>
-          <input type="range" min="0.5" max="2" step="0.005" value="0.965" id="margin">
-        </div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-header">
         <span class="panel-title">Aufteilung</span>
-        <span class="panel-num">04 — 2 Personen</span>
+        <span class="panel-num">03 — 2 Personen</span>
       </div>
       <div class="panel-body">
         <div class="panel-note">Rückzahlung anteilig auf 2 Personen aufteilen</div>
         <div class="slider-group">
           <div class="slider-head">
-            <span class="slider-label">Anteil Person 1</span>
-            <span class="slider-value" id="share1-out">50 %</span>
+            <span class="slider-label">Betrag Person 1</span>
+            <span class="slider-value" id="share1-out">150.000 €</span>
           </div>
-          <input type="range" min="0" max="100" step="5" value="50" id="share1">
+          <input type="range" min="0" max="650000" step="5000" value="150000" id="share1">
         </div>
         <div class="breakdown-row" style="margin-top:6px">
           <span class="breakdown-label">Person 1</span>
@@ -1570,15 +1579,17 @@ function calc() {
   `;
 
   // Summary
-  const share1Pct = +els.share1.value;
   const totalLoan = loanA + loanB;
-  const p1Amount = totalLoan * share1Pct / 100;
-  const p2Amount = totalLoan - p1Amount;
-  const r1 = share1Pct / 100;
+  els.share1.max = Math.max(totalLoan, 5000);
+  if (+els.share1.value > totalLoan) els.share1.value = totalLoan;
+  const p1Amount = +els.share1.value;
+  const p2Amount = Math.max(0, totalLoan - p1Amount);
+  const r1 = totalLoan > 0 ? p1Amount / totalLoan : 0;
   const r2 = 1 - r1;
   document.getElementById('share1-amount').textContent = fmtCur(p1Amount);
   document.getElementById('share2-amount').textContent = fmtCur(p2Amount);
-  document.getElementById('tag-split').textContent = `${share1Pct} / ${100 - share1Pct} %`;
+  const pct1 = Math.round(r1 * 100);
+  document.getElementById('tag-split').textContent = `${pct1} / ${100 - pct1} %`;
   document.getElementById('p1-share').textContent = fmtCur(p1Amount);
   document.getElementById('p2-share').textContent = fmtCur(p2Amount);
   document.getElementById('p1-monthly').textContent = fmtCur(maxRate * r1);
@@ -1940,7 +1951,7 @@ function updateAll() {
   outs.vpi.textContent = fmtPct(+els.vpi.value);
   outs.euribor.textContent = fmtPct(+els.euribor.value);
   outs.margin.textContent = (+els.margin.value).toFixed(3).replace('.', ',') + ' %';
-  outs.share1.textContent = els.share1.value + ' %';
+  outs.share1.textContent = fmtCur(+els.share1.value);
   calc();
 }
 
