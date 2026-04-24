@@ -1048,12 +1048,10 @@ canvas {
   .cell-tip { border-bottom: none !important; }
 
   /* Schedule: split rows into 2 columns (left + right) to save vertical space */
-  .schedule-grid,
-  #schedule-a-body .schedule-grid,
-  #schedule-b-body .schedule-grid,
-  #schedule-p1-body .schedule-grid,
-  #schedule-p2-body .schedule-grid { column-gap: 16px !important; column-fill: balance !important; font-size: 6px !important; line-height: 1.15 !important; letter-spacing: -0.02em !important; column-count: 2 !important; column-rule: 1px solid var(--line-soft) !important; display: block !important; height: auto !important; }
-  .schedule-grid > .sched-row { display: grid !important; width: 100% !important; break-inside: avoid !important; page-break-inside: avoid !important; }
+  .schedule-grid { font-size: 6px; line-height: 1.2; letter-spacing: -0.02em; }
+  .schedule-split { display: flex; gap: 12px; align-items: flex-start; }
+  .schedule-split > .schedule-grid { flex: 1 1 0; min-width: 0; }
+  .schedule-split > .schedule-grid + .schedule-grid { border-left: 1px solid var(--line-soft); padding-left: 10px; }
   .cell-tip { border-bottom: none !important; position: static !important; }
   .cell-tip .cell-tip-body { display: none !important; }
   .sched-row {
@@ -1187,45 +1185,45 @@ footer {
         <div class="slider-group">
           <div class="slider-head">
             <span class="slider-label">Kreditsumme</span>
-            <span class="slider-value" id="loanA-out">200.000 €</span>
+            <span class="slider-value" id="loanA-out">0 €</span>
           </div>
-          <input type="range" min="0" max="350000" step="10000" value="200000" id="loanA">
+          <input type="range" min="0" max="350000" step="10000" value="0" id="loanA">
         </div>
         <div class="slider-group">
           <div class="slider-head">
             <span class="slider-label">Fixzinsbindung</span>
-            <span class="slider-value" id="fixYears-out">10 J</span>
+            <span class="slider-value" id="fixYears-out">0 J</span>
           </div>
-          <input type="range" min="0" max="20" step="1" value="10" id="fixYears">
+          <input type="range" min="0" max="20" step="1" value="0" id="fixYears">
         </div>
         <div class="slider-group">
           <div class="slider-head">
             <span class="slider-label">Gesamtlaufzeit</span>
-            <span class="slider-value" id="totalYearsA-out">20 J</span>
+            <span class="slider-value" id="totalYearsA-out">0 J</span>
           </div>
-          <input type="range" min="0" max="30" step="1" value="20" id="totalYearsA">
+          <input type="range" min="0" max="30" step="1" value="0" id="totalYearsA">
         </div>
         <div class="slider-group">
           <div class="slider-head">
             <span class="slider-label">Fixzinssatz</span>
-            <span class="slider-value" id="fixRate-out">3,15 %</span>
+            <span class="slider-value" id="fixRate-out">0,00 %</span>
           </div>
-          <input type="range" min="0" max="5" step="0.05" value="3.15" id="fixRate">
+          <input type="range" min="0" max="5" step="0.05" value="0" id="fixRate">
         </div>
         <div class="sub-divider"><span>Variabler Zins</span></div>
         <div class="slider-group">
           <div class="slider-head">
             <span class="slider-label">3M Euribor</span>
-            <span class="slider-value" id="euribor-out">2,17 %</span>
+            <span class="slider-value" id="euribor-out">0,00 %</span>
           </div>
-          <input type="range" min="0" max="6" step="0.1" value="2.17" id="euribor">
+          <input type="range" min="0" max="6" step="0.1" value="0" id="euribor">
         </div>
         <div class="slider-group">
           <div class="slider-head">
             <span class="slider-label">Aufschlag Bank</span>
-            <span class="slider-value" id="margin-out">0,965 %</span>
+            <span class="slider-value" id="margin-out">0,000 %</span>
           </div>
-          <input type="range" min="0" max="2" step="0.005" value="0.965" id="margin">
+          <input type="range" min="0" max="2" step="0.005" value="0" id="margin">
         </div>
       </div>
     </div>
@@ -1245,30 +1243,30 @@ footer {
         <div class="slider-group">
           <div class="slider-head">
             <span class="slider-label">Betrag (heutiger Wert)</span>
-            <span class="slider-value" id="loanB-out">100.000 €</span>
+            <span class="slider-value" id="loanB-out">0 €</span>
           </div>
-          <input type="range" min="0" max="300000" step="10000" value="100000" id="loanB">
+          <input type="range" min="0" max="300000" step="10000" value="0" id="loanB">
         </div>
         <div class="slider-group">
           <div class="slider-head">
             <span class="slider-label">Fällig nach</span>
-            <span class="slider-value" id="payoutYear-out">10 J</span>
+            <span class="slider-value" id="payoutYear-out">0 J</span>
           </div>
-          <input type="range" min="0" max="15" step="1" value="10" id="payoutYear">
+          <input type="range" min="0" max="15" step="1" value="0" id="payoutYear">
         </div>
         <div class="slider-group">
           <div class="slider-head">
             <span class="slider-label">Ratenzahlung über</span>
-            <span class="slider-value" id="loanBYears-out">10 J</span>
+            <span class="slider-value" id="loanBYears-out">0 J</span>
           </div>
-          <input type="range" min="0" max="20" step="1" value="10" id="loanBYears">
+          <input type="range" min="0" max="20" step="1" value="0" id="loanBYears">
         </div>
         <div class="slider-group">
           <div class="slider-head">
             <span class="slider-label">VPI jährlich</span>
-            <span class="slider-value" id="vpi-out">2,50 %</span>
+            <span class="slider-value" id="vpi-out">0,00 %</span>
           </div>
-          <input type="range" min="0" max="6" step="0.1" value="2.5" id="vpi">
+          <input type="range" min="0" max="6" step="0.1" value="0" id="vpi">
         </div>
         <label class="vpi-opt">
           <input type="checkbox" id="vpiDuringPayment">
@@ -1287,9 +1285,9 @@ footer {
         <div class="slider-group">
           <div class="slider-head">
             <span class="slider-label">Betrag Person 1</span>
-            <span class="slider-value" id="share1-out">225.000 €</span>
+            <span class="slider-value" id="share1-out">0 €</span>
           </div>
-          <input type="range" min="0" max="650000" step="5000" value="225000" id="share1">
+          <input type="range" min="0" max="650000" step="5000" value="0" id="share1">
         </div>
         <div class="breakdown-row" style="margin-top:6px">
           <span class="breakdown-label">Person 1</span>
@@ -1630,7 +1628,7 @@ function calc() {
   const p1Amount = +els.share1.value;
   const p2Amount = Math.max(0, totalLoan - p1Amount);
   const r1 = totalLoan > 0 ? p1Amount / totalLoan : 0;
-  const r2 = 1 - r1;
+  const r2 = totalLoan > 0 ? 1 - r1 : 0;
   document.getElementById('share1-amount').textContent = fmtCur(p1Amount);
   document.getElementById('share2-amount').textContent = fmtCur(p2Amount);
   const pct1 = Math.round(r1 * 100);
@@ -2020,8 +2018,8 @@ document.querySelectorAll('.preset-btn').forEach(btn => {
 });
 
 // Reset / Undo for Teil A and Teil B
-const defaultsA = { loanA: 200000, fixYears: 10, totalYearsA: 20, fixRate: 3.15, euribor: 2.17, margin: 0.965 };
-const defaultsB = { loanB: 100000, payoutYear: 10, loanBYears: 10, vpi: 2.5 };
+const defaultsA = { loanA: 0, fixYears: 0, totalYearsA: 0, fixRate: 0, euribor: 0, margin: 0 };
+const defaultsB = { loanB: 0, payoutYear: 0, loanBYears: 0, vpi: 0 };
 const snapshots = { a: null, b: null };
 
 function snapshot(which) {
@@ -2186,6 +2184,29 @@ printModal.addEventListener('click', e => { if (e.target === printModal) printMo
 function renderByKey(which) {
   if (which === 'p1' || which === 'p2') renderPersonSchedule(which);
   else renderSchedule(which);
+}
+
+function splitScheduleForPrint(which) {
+  const body = document.getElementById('schedule-' + which + '-body');
+  const grid = body.querySelector('.schedule-grid');
+  if (!grid) return;
+  const head = grid.querySelector('.sched-row.head');
+  const rows = Array.from(grid.querySelectorAll('.sched-row:not(.head)'));
+  if (rows.length < 14) return;
+  const mid = Math.ceil(rows.length / 2);
+  const left = document.createElement('div');
+  left.className = grid.className;
+  const right = document.createElement('div');
+  right.className = grid.className;
+  if (head) { left.appendChild(head.cloneNode(true)); right.appendChild(head.cloneNode(true)); }
+  rows.slice(0, mid).forEach(r => left.appendChild(r));
+  rows.slice(mid).forEach(r => right.appendChild(r));
+  const wrap = document.createElement('div');
+  wrap.className = 'schedule-split';
+  wrap.appendChild(left);
+  wrap.appendChild(right);
+  body.innerHTML = '';
+  body.appendChild(wrap);
 }
 
 function applyPrintColumns(which, view) {
