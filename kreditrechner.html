@@ -2178,7 +2178,21 @@ const printModal = document.getElementById('printModal');
 const printCancel = document.getElementById('printCancel');
 const printConfirm = document.getElementById('printConfirm');
 
-printBtn.onclick = () => printModal.classList.add('open');
+function setPrintRadio(name, value) {
+  const el = document.querySelector(`input[name="${name}"][value="${value}"]`);
+  if (el) el.checked = true;
+}
+function updatePrintDefaults() {
+  const vA = +document.getElementById('loanA').value || 0;
+  const vB = +document.getElementById('loanB').value || 0;
+  const s1 = +document.getElementById('share1').value || 0;
+  const s2 = (vA + vB) - s1;
+  setPrintRadio('printA',  vA > 0 ? 'month' : 'none');
+  setPrintRadio('printB',  vB > 0 ? 'month' : 'none');
+  setPrintRadio('printP1', s1 > 0 ? 'month' : 'none');
+  setPrintRadio('printP2', s2 > 0 ? 'month' : 'none');
+}
+printBtn.onclick = () => { updatePrintDefaults(); printModal.classList.add('open'); };
 printCancel.onclick = () => printModal.classList.remove('open');
 printModal.addEventListener('click', e => { if (e.target === printModal) printModal.classList.remove('open'); });
 
