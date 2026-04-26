@@ -538,6 +538,7 @@ input[type="range"]:focus::-moz-range-thumb {
 .sched-row > span { text-align: right; color: var(--ink); }
 .sched-row > span:first-child { text-align: left; color: var(--ink-soft); }
 .sched-row .zins { color: var(--accent); }
+.sched-row .dup { color: var(--ink-faint); }
 .sched-row .bal { font-weight: 500; }
 .schedule-scroll { max-height: 320px; overflow-y: auto; position: relative; }
 
@@ -1033,6 +1034,33 @@ canvas {
   .total-summary .breakdown-row { padding: 1.5px 0; font-size: 7px; }
   .total-summary .breakdown-label, .total-summary .breakdown-value { color: var(--ink) !important; }
   .total-summary .breakdown-value.highlight { color: var(--accent) !important; }
+
+  /* Avoid splitting card-like blocks across pages */
+  .hero-metric, .breakdown-row, .insight-item, .total-summary,
+  .section-title-row, .split-name {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  .section-title-row { break-after: avoid !important; page-break-after: avoid !important; }
+  .split-name { break-after: avoid !important; page-break-after: avoid !important; }
+
+  /* Person split: each person starts on a new page so the card header is never
+     orphaned from its content, and the section title travels with Person 1. */
+  .split-grid { display: block !important; }
+  .split-col { margin-bottom: 6px; }
+  .result-section:has(.split-grid) { break-before: page !important; page-break-before: always !important; }
+  .split-col + .split-col { break-before: page !important; page-break-before: always !important; border-top: none; padding-top: 0; }
+  /* Glue the person header + all summary metric rows + the toggle button
+     together so the small "card" header isn't split, while the schedule
+     itself remains free to flow across pages. */
+  .split-col > .split-name,
+  .split-col > .breakdown-row,
+  .split-col > .expand-btn { break-inside: avoid !important; page-break-inside: avoid !important; }
+  .split-col > .split-name { break-after: avoid !important; page-break-after: avoid !important; }
+  .split-col > .breakdown-row { break-before: avoid !important; break-after: avoid !important; page-break-before: avoid !important; page-break-after: avoid !important; }
+  .split-col > .expand-btn { break-before: avoid !important; page-break-before: avoid !important; }
+  /* Schedule flows naturally */
+  .schedule-wrap, .schedule-inner { break-inside: auto !important; page-break-inside: auto !important; }
 
   /* Schedule visibility driven by body classes */
   .schedule-wrap { max-height: none !important; overflow: visible !important; }
@@ -1745,10 +1773,14 @@ function renderPersonSchedule(which) {
   if (!data.length || ratio === 0) { body.innerHTML = '<div style="color:var(--ink-faint);font-size:12px;">Keine Zahlungen</div>'; return; }
   const header = `<div class="sched-row head"><span>Periode</span><span>Teil A</span><span>Teil B</span><span>Gesamt</span><span>Anteil</span></div>`;
   let rows;
+  const dup = (cur, prev) => (prev !== null && Math.round(cur) === Math.round(prev)) ? '<span class="dup">—</span>' : fmtCur(cur);
   if (view === 'month') {
+    let pa=null, pb=null, pt=null, ps=null;
     rows = data.map(r => {
-      const tot = r.a + r.b;
-      return `<div class="sched-row"><span>M ${r.m}</span><span>${fmtCur(r.a)}</span><span>${fmtCur(r.b)}</span><span>${fmtCur(tot)}</span><span class="bal">${fmtCur(tot * ratio)}</span></div>`;
+      const tot = r.a + r.b, sh = tot * ratio;
+      const html = `<div class="sched-row"><span>M ${r.m}</span><span>${dup(r.a,pa)}</span><span>${dup(r.b,pb)}</span><span>${dup(tot,pt)}</span><span class="bal">${dup(sh,ps)}</span></div>`;
+      pa=r.a; pb=r.b; pt=tot; ps=sh;
+      return html;
     }).join('');
   } else {
     const years = {};
@@ -1759,10 +1791,13 @@ function renderPersonSchedule(which) {
       years[y].a += r.a;
       years[y].b += r.b;
     });
+    let pa=null, pb=null, pt=null, ps=null;
     rows = yearOrder.map(y => {
       const r = years[y];
-      const tot = r.a + r.b;
-      return `<div class="sched-row"><span>Jahr ${y}</span><span>${fmtCur(r.a)}</span><span>${fmtCur(r.b)}</span><span>${fmtCur(tot)}</span><span class="bal">${fmtCur(tot * ratio)}</span></div>`;
+      const tot = r.a + r.b, sh = tot * ratio;
+      const html = `<div class="sched-row"><span>Jahr ${y}</span><span>${dup(r.a,pa)}</span><span>${dup(r.b,pb)}</span><span>${dup(tot,pt)}</span><span class="bal">${dup(sh,ps)}</span></div>`;
+      pa=r.a; pb=r.b; pt=tot; ps=sh;
+      return html;
     }).join('');
   }
   body.innerHTML = `<div class="schedule-grid person">${header}${rows}</div>`;
@@ -1803,9 +1838,11 @@ function renderSchedule(which) {
     return `<span class="cell-tip-body">${h}</span>`;
   };
 
-  const zinsCell = (r, yearIdx, rowIdx) => {
-    const val = fmtCur(r.zins);
-    if (isB && vpiActive && r.zins > 0.005) {
+  const dup = (cur, prev) => (prev !== null && Math.round(cur) === Math.round(prev)) ? '<span class="dup">—</span>' : fmtCur(cur);
+  const zinsCell = (r, yearIdx, rowIdx, prevZ) => {
+    const same = prevZ !== null && Math.round(r.zins) === Math.round(prevZ);
+    const val = same ? '<span class="dup">—</span>' : fmtCur(r.zins);
+    if (isB && vpiActive && r.zins > 0.005 && !same) {
       const flip = rowIdx < 2 ? ' flip' : '';
       return `<span class="zins"><span class="cell-tip${flip}">${val}${tipFor(yearIdx)}</span></span>`;
     }
@@ -1813,9 +1850,12 @@ function renderSchedule(which) {
   };
 
   if (view === 'month') {
+    let pr=null, pz=null, pt=null, pb=null;
     rows = data.map((r, rowIdx) => {
       const yearIdx = isB ? Math.floor((r.m - (data[0]?.m || 1)) / 12) : 0;
-      return `<div class="sched-row"><span>M ${r.m}</span><span>${fmtCur(r.rate)}</span>${zinsCell(r, yearIdx, rowIdx)}<span>${fmtCur(r.tilgung)}</span><span class="bal">${fmtCur(r.bal)}</span></div>`;
+      const html = `<div class="sched-row"><span>M ${r.m}</span><span>${dup(r.rate,pr)}</span>${zinsCell(r, yearIdx, rowIdx, pz)}<span>${dup(r.tilgung,pt)}</span><span class="bal">${dup(r.bal,pb)}</span></div>`;
+      pr=r.rate; pz=r.zins; pt=r.tilgung; pb=r.bal;
+      return html;
     }).join('');
   } else {
     const years = {};
@@ -1828,10 +1868,13 @@ function renderSchedule(which) {
       years[y].tilgung += r.tilgung;
       years[y].bal = r.bal;
     });
+    let pr=null, pz=null, pt=null, pb=null;
     rows = yearOrder.map((y, idx) => {
       const r = years[y];
       const yearIdx = isB ? idx : 0;
-      return `<div class="sched-row"><span>Jahr ${y}</span><span>${fmtCur(r.rate)}</span>${zinsCell(r, yearIdx, idx)}<span>${fmtCur(r.tilgung)}</span><span class="bal">${fmtCur(r.bal)}</span></div>`;
+      const html = `<div class="sched-row"><span>Jahr ${y}</span><span>${dup(r.rate,pr)}</span>${zinsCell(r, yearIdx, idx, pz)}<span>${dup(r.tilgung,pt)}</span><span class="bal">${dup(r.bal,pb)}</span></div>`;
+      pr=r.rate; pz=r.zins; pt=r.tilgung; pb=r.bal;
+      return html;
     }).join('');
   }
   body.innerHTML = `<div class="schedule-grid">${header}${rows}</div>`;
